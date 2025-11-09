@@ -1,6 +1,36 @@
 from rest_framework import serializers
-from .models import Order
+from .models import Order, Client
 from users.models import User
+
+
+class ClientSerializer(serializers.ModelSerializer):
+    """
+    Client modelini serialize qilish uchun serializer
+    """
+    class Meta:
+        model = Client
+        fields = [
+            'id', 'full_name', 'phone_number', 'location_name', 'address', 
+            'longitude', 'latitude', 'notes', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+        extra_kwargs = {
+            'full_name': {'help_text': 'Mijozning to\'liq ism-familyasi'},
+            'phone_number': {'help_text': 'Mijozning telefon raqami'},
+            'location_name': {'help_text': 'Joylashuv nomi (masalan: "Toshkent mall")'},
+            'address': {'help_text': 'To\'liq manzil'},
+            'longitude': {'help_text': 'Geografik uzunlik (ixtiyoriy)'},
+            'latitude': {'help_text': 'Geografik kenglik (ixtiyoriy)'},
+            'notes': {'help_text': 'Mijoz haqida qo\'shimcha ma\'lumotlar (ixtiyoriy)'},
+        }
+    
+    def validate_phone_number(self, value):
+        """
+        Telefon raqam validatsiyasi
+        """
+        if not value.replace('+', '').replace('-', '').replace(' ', '').replace('(', '').replace(')', '').isdigit():
+            raise serializers.ValidationError("Telefon raqam faqat raqamlardan iborat bo'lishi kerak!")
+        return value
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -17,35 +47,33 @@ class OrderSerializer(serializers.ModelSerializer):
         read_only=True,
         help_text="Tayinlangan kuryer nomi"
     )
+    client = ClientSerializer(read_only=True)
+    client_id = serializers.IntegerField(write_only=True, help_text="Mijoz ID raqami")
     
     class Meta:
         model = Order
         fields = [
-            'id', 'full_name', 'phone_number', 'address', 'kiruvchi_soni', 'chiquvchi_soni',
-            'notes', 'longitude', 'latitude', 'status', 'created_at', 
-            'updated_at', 'created_by', 'assigned_to', 'created_by_username',
-            'assigned_to_username'
+            'id', 'client', 'client_id', 'kiruvchi_soni', 'chiquvchi_soni',
+            'notes', 'status', 'created_at', 'updated_at', 'created_by', 
+            'assigned_to', 'created_by_username', 'assigned_to_username'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at', 'created_by_username', 'assigned_to_username']
         extra_kwargs = {
-            'full_name': {'help_text': 'Mijozning to\'liq ism-familyasi'},
-            'phone_number': {'help_text': 'Mijozning telefon raqami'},
-            'address': {'help_text': 'Dastavka manzili'},
             'kiruvchi_soni': {'help_text': 'Kiruvchi buyumlar soni'},
             'chiquvchi_soni': {'help_text': 'Chiquvchi buyumlar soni'},
-            'notes': {'help_text': 'Qo\'shimcha izohlar (ixtiyoriy)'},
-            'longitude': {'help_text': 'Geografik uzunlik (ixtiyoriy)'},
-            'latitude': {'help_text': 'Geografik kenglik (ixtiyoriy)'},
+            'notes': {'help_text': 'Buyurtma haqida qo\'shimcha izohlar (ixtiyoriy)'},
             'status': {'help_text': 'Buyurtma holati'},
             'assigned_to': {'help_text': 'Tayinlangan kuryer (ixtiyoriy)'},
         }
     
-    def validate_phone_number(self, value):
+    def validate_client_id(self, value):
         """
-        Telefon raqam validatsiyasi
+        Client ID validatsiyasi
         """
-        if not value.replace('+', '').replace('-', '').replace(' ', '').replace('(', '').replace(')', '').isdigit():
-            raise serializers.ValidationError("Telefon raqam faqat raqamlardan iborat bo'lishi kerak!")
+        try:
+            Client.objects.get(id=value)
+        except Client.DoesNotExist:
+            raise serializers.ValidationError("Bunday ID raqamli mijoz topilmadi!")
         return value
     
     def validate_assigned_to(self, value):
@@ -61,25 +89,44 @@ class OrderCreateSerializer(serializers.ModelSerializer):
     """
     Yangi buyurtma yaratish uchun serializer
     """
+    # Client ma'lumotlarini nested shaklda qabul qilish
+    client_full_name = serializers.CharField(help_text="Mijozning to'liq ism-familyasi")
+    client_phone_number = serializers.CharField(help_text="Mijozning telefon raqami")
+    client_location_name = serializers.CharField(help_text="Joylashuv nomi")
+    client_address = serializers.CharField(help_text="To'liq manzil")
+    client_longitude = serializers.DecimalField(
+        max_digits=10, 
+        decimal_places=7, 
+        required=False, 
+        help_text="Geografik uzunlik (ixtiyoriy)"
+    )
+    client_latitude = serializers.DecimalField(
+        max_digits=10, 
+        decimal_places=7, 
+        required=False, 
+        help_text="Geografik kenglik (ixtiyoriy)"
+    )
+    client_notes = serializers.CharField(
+        required=False, 
+        allow_blank=True, 
+        help_text="Mijoz haqida qo'shimcha ma'lumotlar (ixtiyoriy)"
+    )
+    
     class Meta:
         model = Order
         fields = [
-            'full_name', 'phone_number', 'address', 'kiruvchi_soni', 'chiquvchi_soni',
-            'notes', 'longitude', 'latitude', 'assigned_to'
+            'client_full_name', 'client_phone_number', 'client_location_name', 
+            'client_address', 'client_longitude', 'client_latitude', 'client_notes',
+            'kiruvchi_soni', 'chiquvchi_soni', 'notes', 'assigned_to'
         ]
         extra_kwargs = {
-            'full_name': {'help_text': 'Mijozning to\'liq ism-familyasi (majburiy)'},
-            'phone_number': {'help_text': 'Mijozning telefon raqami (majburiy)'},
-            'address': {'help_text': 'Dastavka manzili (majburiy)'},
             'kiruvchi_soni': {'help_text': 'Kiruvchi buyumlar soni (default: 0)'},
             'chiquvchi_soni': {'help_text': 'Chiquvchi buyumlar soni (default: 0)'},
-            'notes': {'help_text': 'Qo\'shimcha izohlar (ixtiyoriy)'},
-            'longitude': {'help_text': 'Geografik uzunlik (ixtiyoriy)'},
-            'latitude': {'help_text': 'Geografik kenglik (ixtiyoriy)'},
+            'notes': {'help_text': 'Buyurtma haqida qo\'shimcha izohlar (ixtiyoriy)'},
             'assigned_to': {'help_text': 'Tayinlangan kuryer (ixtiyoriy)'},
         }
     
-    def validate_phone_number(self, value):
+    def validate_client_phone_number(self, value):
         """
         Telefon raqam validatsiyasi
         """
@@ -92,13 +139,30 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         Faqat kuryer rolida bo'lgan userlarni tayinlash mumkin
         """
         if value and value.role != 'kuryer':
-            raise serializers.ValidationError("Faqat kuryer rolindagi foydalanuvchilarni tayinlash mumkin!")
+            raise serializers.ValidationError("Faqat kuryer rolindagilarni tayinlash mumkin!")
         return value
     
     def create(self, validated_data):
         """
-        Yangi buyurtma yaratish
+        Yangi buyurtma va mijoz yaratish
         """
+        # Client ma'lumotlarini ajratib olish
+        client_data = {
+            'full_name': validated_data.pop('client_full_name'),
+            'phone_number': validated_data.pop('client_phone_number'),
+            'location_name': validated_data.pop('client_location_name'),
+            'address': validated_data.pop('client_address'),
+            'longitude': validated_data.pop('client_longitude', None),
+            'latitude': validated_data.pop('client_latitude', None),
+            'notes': validated_data.pop('client_notes', ''),
+        }
+        
+        # Yangi mijoz yaratish
+        client = Client.objects.create(**client_data)
+        
+        # Buyurtma ma'lumotlarini tayyorlash
+        validated_data['client'] = client
+        
         # Yaratuvchini request.user dan olish
         request = self.context.get('request')
         if request and hasattr(request, 'user'):
@@ -111,31 +175,34 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
     """
     Buyurtmani yangilash uchun serializer
     """
+    client_id = serializers.IntegerField(
+        required=False, 
+        help_text="Mijozni o'zgartirish uchun mijoz ID raqami (ixtiyoriy)"
+    )
+    
     class Meta:
         model = Order
         fields = [
-            'full_name', 'phone_number', 'address', 'kiruvchi_soni', 'chiquvchi_soni',
-            'notes', 'longitude', 'latitude', 'status', 'assigned_to'
+            'client_id', 'kiruvchi_soni', 'chiquvchi_soni',
+            'notes', 'status', 'assigned_to'
         ]
         extra_kwargs = {
-            'full_name': {'help_text': 'Mijozning to\'liq ism-familyasi'},
-            'phone_number': {'help_text': 'Mijozning telefon raqami'},
-            'address': {'help_text': 'Dastavka manzili'},
             'kiruvchi_soni': {'help_text': 'Kiruvchi buyumlar soni'},
             'chiquvchi_soni': {'help_text': 'Chiquvchi buyumlar soni'},
-            'notes': {'help_text': 'Qo\'shimcha izohlar'},
-            'longitude': {'help_text': 'Geografik uzunlik'},
-            'latitude': {'help_text': 'Geografik kenglik'},
+            'notes': {'help_text': 'Buyurtma haqida qo\'shimcha izohlar'},
             'status': {'help_text': 'Buyurtma holati'},
             'assigned_to': {'help_text': 'Tayinlangan kuryer'},
         }
     
-    def validate_phone_number(self, value):
+    def validate_client_id(self, value):
         """
-        Telefon raqam validatsiyasi
+        Client ID validatsiyasi
         """
-        if not value.replace('+', '').replace('-', '').replace(' ', '').replace('(', '').replace(')', '').isdigit():
-            raise serializers.ValidationError("Telefon raqam faqat raqamlardan iborat bo'lishi kerak!")
+        if value:
+            try:
+                Client.objects.get(id=value)
+            except Client.DoesNotExist:
+                raise serializers.ValidationError("Bunday ID raqamli mijoz topilmadi!")
         return value
     
     def validate_assigned_to(self, value):
@@ -159,12 +226,24 @@ class OrderListSerializer(serializers.ModelSerializer):
         source='assigned_to.username', 
         read_only=True
     )
+    client_full_name = serializers.CharField(
+        source='client.full_name', 
+        read_only=True
+    )
+    client_phone_number = serializers.CharField(
+        source='client.phone_number', 
+        read_only=True
+    )
+    client_location_name = serializers.CharField(
+        source='client.location_name', 
+        read_only=True
+    )
     
     class Meta:
         model = Order
         fields = [
-            'id', 'full_name', 'phone_number', 'address', 'status',
-            'kiruvchi_soni', 'chiquvchi_soni', 'created_at', 'updated_at', 'created_by_username',
-            'assigned_to_username'
+            'id', 'client_full_name', 'client_phone_number', 'client_location_name',
+            'status', 'kiruvchi_soni', 'chiquvchi_soni', 
+            'created_at', 'updated_at', 'created_by_username', 'assigned_to_username'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']

@@ -3,12 +3,13 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiExample, OpenApiResponse
-from .models import Order
+from .models import Order, Client
 from .serializers import (
     OrderSerializer, 
     OrderCreateSerializer, 
     OrderUpdateSerializer,
-    OrderListSerializer
+    OrderListSerializer,
+    ClientSerializer
 )
 
 
@@ -30,14 +31,16 @@ from .serializers import (
             OpenApiExample(
                 'Yangi buyurtma',
                 value={
-                    "full_name": "Anvar Karimov",
-                    "phone_number": "+998901234567",
-                    "address": "Toshkent sh., Chilonzor t., 1-kv, 10-uy",
+                    "client_full_name": "Anvar Karimov",
+                    "client_phone_number": "+998901234567",
+                    "client_location_name": "Toshkent mall",
+                    "client_address": "Toshkent sh., Chilonzor t., 1-kv, 10-uy",
+                    "client_longitude": "69.2401",
+                    "client_latitude": "41.2995",
+                    "client_notes": "Doimiy mijoz",
                     "kiruvchi_soni": 5,
                     "chiquvchi_soni": 3,
-                    "notes": "2-qavat, qo'ng'iroq qiling",
-                    "longitude": "69.2401",
-                    "latitude": "41.2995"
+                    "notes": "2-qavat, qo'ng'iroq qiling"
                 }
             )
         ],
@@ -52,7 +55,7 @@ class OrderListCreateView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['status', 'assigned_to', 'created_by']
-    search_fields = ['full_name', 'phone_number', 'address', 'notes']
+    search_fields = ['client__full_name', 'client__phone_number', 'client__location_name', 'notes']
     ordering_fields = ['created_at', 'updated_at', 'status']
     ordering = ['-created_at']
     
