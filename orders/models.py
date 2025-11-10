@@ -80,8 +80,8 @@ class Order(models.Model):
     """
     
     STATUS_CHOICES = [
-        ('kutilmoqda', 'Kutilmoqda'),
-        ('bajarildi', 'Bajarildi'),
+        ('kútilmekte', 'kútilmekte'),
+        ('orınlandı', 'orınlandı'),
         ('bekor_qilindi', 'Bekor qilindi'),
     ]
     
@@ -168,7 +168,7 @@ class Order(models.Model):
     status = models.CharField(
         max_length=15,
         choices=STATUS_CHOICES,
-        default='kutilmoqda',
+        default='kútilmekte',
         verbose_name="Status"
     )
     
