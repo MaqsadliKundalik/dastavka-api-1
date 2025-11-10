@@ -11,6 +11,7 @@ from .serializers import (
     OrderListSerializer,
     ClientSerializer
 )
+from .filters import OrderFilter
 
 
 @extend_schema_view(
@@ -54,7 +55,7 @@ class OrderListCreateView(generics.ListCreateAPIView):
     queryset = Order.objects.all()
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['status', 'assigned_to', 'created_by']
+    filterset_class = OrderFilter
     search_fields = ['client__full_name', 'client__phone_number', 'client__location_name', 'notes']
     ordering_fields = ['created_at', 'updated_at', 'status']
     ordering = ['-created_at']
