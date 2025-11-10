@@ -87,34 +87,56 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class OrderCreateSerializer(serializers.ModelSerializer):
     """
-    Yangi buyurtma yaratish uchun serializer
+    Yangi buyurtma yaratish uchun serializer.
+    Ikki xil usul bilan buyurtma yaratish mumkin:
+    1. client_id kiritish (mavjud mijoz uchun)
+    2. client ma'lumotlarini kiritish (yangi mijoz yaratish uchun)
     """
-    # Client ma'lumotlarini nested shaklda qabul qilish
-    client_full_name = serializers.CharField(help_text="Mijozning to'liq ism-familyasi")
-    client_phone_number = serializers.CharField(help_text="Mijozning telefon raqami")
-    client_location_name = serializers.CharField(help_text="Joylashuv nomi")
-    client_address = serializers.CharField(help_text="To'liq manzil")
+    # Mavjud client ID si (ixtiyoriy)
+    client_id = serializers.IntegerField(
+        required=False, 
+        help_text="Mavjud mijozning ID raqami (agar mavjud mijoz uchun buyurtma bersa)"
+    )
+    
+    # Yangi client ma'lumotlari (ixtiyoriy)
+    client_full_name = serializers.CharField(
+        required=False, 
+        help_text="Yangi mijozning to'liq ism-familyasi"
+    )
+    client_phone_number = serializers.CharField(
+        required=False, 
+        help_text="Yangi mijozning telefon raqami"
+    )
+    client_location_name = serializers.CharField(
+        required=False, 
+        help_text="Yangi mijozning joylashuv nomi"
+    )
+    client_address = serializers.CharField(
+        required=False, 
+        help_text="Yangi mijozning to'liq manzili"
+    )
     client_longitude = serializers.DecimalField(
         max_digits=10, 
         decimal_places=7, 
         required=False, 
-        help_text="Geografik uzunlik (ixtiyoriy)"
+        help_text="Yangi mijozning geografik uzunligi (ixtiyoriy)"
     )
     client_latitude = serializers.DecimalField(
         max_digits=10, 
         decimal_places=7, 
         required=False, 
-        help_text="Geografik kenglik (ixtiyoriy)"
+        help_text="Yangi mijozning geografik kengligi (ixtiyoriy)"
     )
     client_notes = serializers.CharField(
         required=False, 
         allow_blank=True, 
-        help_text="Mijoz haqida qo'shimcha ma'lumotlar (ixtiyoriy)"
+        help_text="Yangi mijoz haqida qo'shimcha ma'lumotlar (ixtiyoriy)"
     )
     
     class Meta:
         model = Order
         fields = [
+            'client_id',
             'client_full_name', 'client_phone_number', 'client_location_name', 
             'client_address', 'client_longitude', 'client_latitude', 'client_notes',
             'kiruvchi_soni', 'chiquvchi_soni', 'notes', 'assigned_to'
@@ -126,11 +148,40 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             'assigned_to': {'help_text': 'Tayinlangan kuryer (ixtiyoriy)'},
         }
     
+    def validate(self, data):
+        """
+        Ma'lumotlarni to'liq validatsiya qilish
+        """
+        client_id = data.get('client_id')
+        client_full_name = data.get('client_full_name')
+        
+        # Client ID yoki yangi client ma'lumotlari majburiy
+        if not client_id and not client_full_name:
+            raise serializers.ValidationError(
+                "client_id (mavjud mijoz uchun) yoki client_full_name (yangi mijoz uchun) kiritish majburiy!"
+            )
+        
+        # Agar client_id berilgan bo'lsa, boshqa client fieldlari kerak emas
+        if client_id:
+            try:
+                Client.objects.get(id=client_id)
+            except Client.DoesNotExist:
+                raise serializers.ValidationError(f"ID={client_id} bo'lgan mijoz topilmadi!")
+        
+        # Agar yangi client yaratish kerak bo'lsa, majburiy fieldlarni tekshirish
+        if not client_id and client_full_name:
+            required_fields = ['client_phone_number', 'client_location_name', 'client_address']
+            for field in required_fields:
+                if not data.get(field):
+                    raise serializers.ValidationError(f"Yangi mijoz uchun {field} majburiy!")
+        
+        return data
+    
     def validate_client_phone_number(self, value):
         """
         Telefon raqam validatsiyasi
         """
-        if not value.replace('+', '').replace('-', '').replace(' ', '').replace('(', '').replace(')', '').isdigit():
+        if value and not value.replace('+', '').replace('-', '').replace(' ', '').replace('(', '').replace(')', '').isdigit():
             raise serializers.ValidationError("Telefon raqam faqat raqamlardan iborat bo'lishi kerak!")
         return value
     
@@ -144,28 +195,42 @@ class OrderCreateSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         """
-        Yangi buyurtma va mijoz yaratish
+        Yangi buyurtma yaratish (mavjud yoki yangi mijoz bilan)
         """
-        # Client ma'lumotlarini ajratib olish
-        client_data = {
-            'full_name': validated_data.pop('client_full_name'),
-            'phone_number': validated_data.pop('client_phone_number'),
-            'location_name': validated_data.pop('client_location_name'),
-            'address': validated_data.pop('client_address'),
-            'longitude': validated_data.pop('client_longitude', None),
-            'latitude': validated_data.pop('client_latitude', None),
-            'notes': validated_data.pop('client_notes', ''),
-        }
+        client_id = validated_data.pop('client_id', None)
+        client = None
         
-        # Yangi mijoz yaratish
-        client = Client.objects.create(**client_data)
+        if client_id:
+            # Mavjud mijozni olish
+            client = Client.objects.get(id=client_id)
+            
+            # Client ma'lumotlarini o'chirish (ular kerak emas)
+            validated_data.pop('client_full_name', None)
+            validated_data.pop('client_phone_number', None)
+            validated_data.pop('client_location_name', None)
+            validated_data.pop('client_address', None)
+            validated_data.pop('client_longitude', None)
+            validated_data.pop('client_latitude', None)
+            validated_data.pop('client_notes', None)
+        else:
+            # Yangi mijoz yaratish
+            client_data = {
+                'full_name': validated_data.pop('client_full_name'),
+                'phone_number': validated_data.pop('client_phone_number'),
+                'location_name': validated_data.pop('client_location_name'),
+                'address': validated_data.pop('client_address'),
+                'longitude': validated_data.pop('client_longitude', None),
+                'latitude': validated_data.pop('client_latitude', None),
+                'notes': validated_data.pop('client_notes', ''),
+            }
+            client = Client.objects.create(**client_data)
         
         # Buyurtma ma'lumotlarini tayyorlash
         validated_data['client'] = client
         
         # Yaratuvchini request.user dan olish
         request = self.context.get('request')
-        if request and hasattr(request, 'user'):
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
             validated_data['created_by'] = request.user
         
         return super().create(validated_data)

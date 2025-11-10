@@ -22,7 +22,7 @@ from .filters import OrderFilter
     ),
     create=extend_schema(
         summary="Yangi buyurtma yaratish",
-        description="Yangi buyurtma yaratish. 5-xonali unique ID avtomatik generatsiya qilinadi.",
+        description="Yangi buyurtma yaratish. Mavjud mijoz uchun client_id kiritish yoki yangi mijoz ma'lumotlarini kiritish mumkin. 5-xonali unique ID avtomatik generatsiya qilinadi.",
         request=OrderCreateSerializer,
         responses={
             201: OrderSerializer,
@@ -30,7 +30,16 @@ from .filters import OrderFilter
         },
         examples=[
             OpenApiExample(
-                'Yangi buyurtma',
+                'Mavjud mijoz uchun buyurtma',
+                value={
+                    "client_id": 1,
+                    "kiruvchi_soni": 10,
+                    "chiquvchi_soni": 0,
+                    "notes": "Shoshilinch buyurtma"
+                }
+            ),
+            OpenApiExample(
+                'Yangi mijoz uchun buyurtma',
                 value={
                     "client_full_name": "Anvar Karimov",
                     "client_phone_number": "+998901234567",
