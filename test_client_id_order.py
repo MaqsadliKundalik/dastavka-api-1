@@ -57,7 +57,7 @@ def test_order_with_client_id():
                 print(f"      👤 Client ID: {new_order['client']['id']}")
                 print(f"      👤 Client nomi: {new_order['client']['full_name']}")
                 print(f"      📞 Client telefon: {new_order['client']['phone_number']}")
-                print(f"      📍 Manzil: {new_order['client']['location_name']}")
+                print(f"      📍 Manzil: {new_order['client']['address']}")
                 print(f"      📦 Kiruvchi: {new_order.get('kiruvchi_soni', 'N/A')}")
                 print(f"      📤 Chiquvchi: {new_order.get('chiquvchi_soni', 'N/A')}")
                 print(f"      📝 Izoh: {new_order.get('notes', 'N/A')}")

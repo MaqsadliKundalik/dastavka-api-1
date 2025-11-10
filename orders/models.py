@@ -18,11 +18,6 @@ class Client(models.Model):
         verbose_name="Telefon raqam"
     )
     
-    # Lokatsiya ma'lumotlari
-    location_name = models.CharField(
-        max_length=255,
-        verbose_name="Manzil nomi/Tavsifi"
-    )
     address = models.TextField(
         verbose_name="To'liq manzil"
     )
@@ -147,14 +142,14 @@ class Order(models.Model):
         verbose_name="Mijoz"
     )
     
-    # Buyumlar soni
-    kiruvchi_soni = models.PositiveIntegerField(
+    # Zakazlar soni
+    baklashka_soni = models.PositiveIntegerField(
         default=0,
-        verbose_name="Kiruvchi buyumlar soni"
+        verbose_name="Baklashkalar soni"
     )
-    chiquvchi_soni = models.PositiveIntegerField(
+    kuler_soni = models.PositiveIntegerField(
         default=0,
-        verbose_name="Chiquvchi buyumlar soni"
+        verbose_name="Kulerlar soni"
     )
     
     # Buyurtma haqida qo'shimcha ma'lumotlar

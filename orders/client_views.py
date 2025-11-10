@@ -46,7 +46,7 @@ class ClientListCreateView(generics.ListCreateAPIView):
     serializer_class = ClientSerializer
     permission_classes = [permissions.AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['full_name', 'phone_number', 'location_name', 'address']
+    search_fields = ['full_name', 'phone_number', 'address']
     ordering_fields = ['created_at', 'updated_at', 'full_name']
     ordering = ['-created_at']
 

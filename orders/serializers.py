@@ -10,17 +10,16 @@ class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         fields = [
-            'id', 'full_name', 'phone_number', 'location_name', 'address', 
+            'id', 'full_name', 'phone_number', 'address', 
             'longitude', 'latitude', 'notes', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
         extra_kwargs = {
             'full_name': {'help_text': 'Mijozning to\'liq ism-familyasi'},
             'phone_number': {'help_text': 'Mijozning telefon raqami'},
-            'location_name': {'help_text': 'Joylashuv nomi (masalan: "Toshkent mall")'},
             'address': {'help_text': 'To\'liq manzil'},
-            'longitude': {'help_text': 'Geografik uzunlik (ixtiyoriy)'},
-            'latitude': {'help_text': 'Geografik kenglik (ixtiyoriy)'},
+            'longitude': {'help_text': 'GPS uzunlik kordinatasi (ixtiyoriy)'},
+            'latitude': {'help_text': 'GPS kenglik kordinatasi (ixtiyoriy)'},
             'notes': {'help_text': 'Mijoz haqida qo\'shimcha ma\'lumotlar (ixtiyoriy)'},
         }
     
@@ -53,14 +52,14 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
-            'id', 'client', 'client_id', 'kiruvchi_soni', 'chiquvchi_soni',
+            'id', 'client', 'client_id', 'baklashka_soni', 'kuler_soni',
             'notes', 'status', 'created_at', 'updated_at', 'created_by', 
             'assigned_to', 'created_by_username', 'assigned_to_username'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at', 'created_by_username', 'assigned_to_username']
         extra_kwargs = {
-            'kiruvchi_soni': {'help_text': 'Kiruvchi buyumlar soni'},
-            'chiquvchi_soni': {'help_text': 'Chiquvchi buyumlar soni'},
+            'baklashka_soni': {'help_text': 'Baklashkalar soni'},
+            'kuler_soni': {'help_text': 'Kulerlar soni'},
             'notes': {'help_text': 'Buyurtma haqida qo\'shimcha izohlar (ixtiyoriy)'},
             'status': {'help_text': 'Buyurtma holati'},
             'assigned_to': {'help_text': 'Tayinlangan kuryer (ixtiyoriy)'},
@@ -99,11 +98,11 @@ class OrderCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
-            'client_id', 'kiruvchi_soni', 'chiquvchi_soni', 'notes', 'assigned_to'
+            'client_id', 'baklashka_soni', 'kuler_soni', 'notes', 'assigned_to'
         ]
         extra_kwargs = {
-            'kiruvchi_soni': {'help_text': 'Kiruvchi buyumlar soni (default: 0)'},
-            'chiquvchi_soni': {'help_text': 'Chiquvchi buyumlar soni (default: 0)'},
+            'baklashka_soni': {'help_text': 'Baklashkalar soni (default: 0)'},
+            'kuler_soni': {'help_text': 'Kulerlar soni (default: 0)'},
             'notes': {'help_text': 'Buyurtma haqida qo\'shimcha izohlar (ixtiyoriy)'},
             'assigned_to': {'help_text': 'Tayinlangan kuryer (ixtiyoriy)'},
         }
@@ -158,12 +157,12 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
-            'client_id', 'kiruvchi_soni', 'chiquvchi_soni',
+            'client_id', 'baklashka_soni', 'kuler_soni',
             'notes', 'status', 'assigned_to'
         ]
         extra_kwargs = {
-            'kiruvchi_soni': {'help_text': 'Kiruvchi buyumlar soni'},
-            'chiquvchi_soni': {'help_text': 'Chiquvchi buyumlar soni'},
+            'baklashka_soni': {'help_text': 'Baklashkalar soni'},
+            'kuler_soni': {'help_text': 'Kulerlar soni'},
             'notes': {'help_text': 'Buyurtma haqida qo\'shimcha izohlar'},
             'status': {'help_text': 'Buyurtma holati'},
             'assigned_to': {'help_text': 'Tayinlangan kuryer'},
@@ -209,16 +208,16 @@ class OrderListSerializer(serializers.ModelSerializer):
         source='client.phone_number', 
         read_only=True
     )
-    client_location_name = serializers.CharField(
-        source='client.location_name', 
+    client_address = serializers.CharField(
+        source='client.address', 
         read_only=True
     )
     
     class Meta:
         model = Order
         fields = [
-            'id', 'client_full_name', 'client_phone_number', 'client_location_name',
-            'status', 'kiruvchi_soni', 'chiquvchi_soni', 
+            'id', 'client_full_name', 'client_phone_number', 'client_address',
+            'status', 'baklashka_soni', 'kuler_soni', 
             'created_at', 'updated_at', 'created_by_username', 'assigned_to_username'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']

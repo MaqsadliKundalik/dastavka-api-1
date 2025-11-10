@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from . import views, stats_views
 
 app_name = 'orders'
 
@@ -14,4 +14,10 @@ urlpatterns = [
     
     # Shaxsiy buyurtmalar
     path('my/', views.my_orders, name='my-orders'),
+    
+    # Statistika
+    path('stats/', stats_views.order_statistics, name='order-statistics'),
+    path('stats/general/', stats_views.general_statistics, name='general-statistics'),
+    path('stats/top-clients/', stats_views.top_clients, name='top-clients'),
+    path('stats/couriers/', stats_views.couriers_statistics, name='couriers-statistics'),
 ]

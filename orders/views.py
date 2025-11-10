@@ -30,11 +30,11 @@ from .filters import OrderFilter
         },
         examples=[
             OpenApiExample(
-                'Mijoz ID bilan buyurtma yaratish',
+                name='Mijoz ID bilan buyurtma yaratish',
                 value={
                     "client_id": 1,
-                    "kiruvchi_soni": 10,
-                    "chiquvchi_soni": 2,
+                    "baklashka_soni": 10,
+                    "kuler_soni": 2,
                     "notes": "Shoshilinch buyurtma"
                 }
             )
@@ -50,7 +50,7 @@ class OrderListCreateView(generics.ListCreateAPIView):
     permission_classes = [permissions.AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = OrderFilter
-    search_fields = ['client__full_name', 'client__phone_number', 'client__location_name', 'notes']
+    search_fields = ['client__full_name', 'client__phone_number', 'client__address', 'notes']
     ordering_fields = ['created_at', 'updated_at', 'status']
     ordering = ['-created_at']
     
@@ -141,7 +141,7 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
             description="Status muvaffaqiyatli yangilandi",
             examples=[
                 OpenApiExample(
-                    'Status yangilandi',
+                    name='Status yangilandi',
                     value={
                         "message": "Buyurtma statusi muvaffaqiyatli yangilandi!",
                         "order_id": 12345,
@@ -211,7 +211,7 @@ def update_order_status(request, pk):
             description="Kuryer muvaffaqiyatli tayinlandi",
             examples=[
                 OpenApiExample(
-                    'Kuryer tayinlandi',
+                    name='Kuryer tayinlandi',
                     value={
                         "message": "Buyurtma kuryerga muvaffaqiyatli tayinlandi!",
                         "order_id": 12345,
