@@ -44,7 +44,7 @@ class ClientListCreateView(generics.ListCreateAPIView):
     """
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['full_name', 'phone_number', 'location_name', 'address']
     ordering_fields = ['created_at', 'updated_at', 'full_name']
@@ -95,7 +95,7 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
 
 @extend_schema(
@@ -105,7 +105,7 @@ class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
     tags=["Clients"]
 )
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
+@permission_classes([permissions.AllowAny])
 def client_orders(request, pk):
     """
     Mijozning barcha buyurtmalari
@@ -159,7 +159,7 @@ def client_orders(request, pk):
     tags=["Clients"]
 )
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
+@permission_classes([permissions.AllowAny])
 def clients_stats(request):
     """
     Mijozlar statistikasi

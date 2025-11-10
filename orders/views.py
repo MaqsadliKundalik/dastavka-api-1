@@ -53,7 +53,7 @@ class OrderListCreateView(generics.ListCreateAPIView):
     Buyurtmalar ro'yxati va yangi buyurtma yaratish
     """
     queryset = Order.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = OrderFilter
     search_fields = ['client__full_name', 'client__phone_number', 'client__location_name', 'notes']
@@ -120,7 +120,7 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     
     def get_serializer_class(self):
         if self.request.method in ['PUT', 'PATCH']:
@@ -162,7 +162,7 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
     tags=["Orders"]
 )
 @api_view(['PATCH'])
-@permission_classes([permissions.IsAuthenticated])
+@permission_classes([permissions.AllowAny])
 def update_order_status(request, pk):
     """
     Buyurtma statusini yangilash
@@ -232,7 +232,7 @@ def update_order_status(request, pk):
     tags=["Orders"]
 )
 @api_view(['PATCH'])
-@permission_classes([permissions.IsAuthenticated])
+@permission_classes([permissions.AllowAny])
 def assign_courier(request, pk):
     """
     Buyurtmani kuryerga tayinlash
@@ -287,7 +287,7 @@ def assign_courier(request, pk):
     tags=["Orders"]
 )
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
+@permission_classes([permissions.AllowAny])
 def my_orders(request):
     """
     Joriy foydalanuvchining buyurtmalari

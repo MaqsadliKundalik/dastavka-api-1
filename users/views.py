@@ -32,7 +32,7 @@ class UserListCreateView(generics.ListCreateAPIView):
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     
     def get_permissions(self):
         """
@@ -71,7 +71,7 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
 
 @extend_schema(
@@ -191,7 +191,7 @@ def user_login(request):
     tags=["Authentication"]
 )
 @api_view(['POST'])
-@permission_classes([permissions.IsAuthenticated])
+@permission_classes([permissions.AllowAny])
 def user_logout(request):
     """
     Foydalanuvchi tizimdan chiqish endpoint-i
@@ -217,7 +217,7 @@ def user_logout(request):
     tags=["Profile"]
 )
 @api_view(['GET', 'PUT', 'PATCH'])
-@permission_classes([permissions.IsAuthenticated])
+@permission_classes([permissions.AllowAny])
 def user_profile(request):
     """
     Foydalanuvchi profili ko'rish va yangilash endpoint-i
@@ -265,7 +265,7 @@ def user_profile(request):
     tags=["Profile"]
 )
 @api_view(['PUT', 'PATCH'])
-@permission_classes([permissions.IsAuthenticated])
+@permission_classes([permissions.AllowAny])
 def update_profile(request):
     """
     Foydalanuvchi profilini yangilash endpoint-i
