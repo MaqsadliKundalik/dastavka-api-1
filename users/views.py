@@ -33,14 +33,6 @@ class UserListCreateView(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
-    
-    def get_permissions(self):
-        """
-        Faqat admin userlar yangi user yarata oladi
-        """
-        if self.request.method == 'POST':
-            return [permissions.IsAuthenticated()]
-        return [permissions.IsAuthenticated()]
 
 
 @extend_schema_view(
