@@ -28,7 +28,13 @@ class UserSerializer(serializers.ModelSerializer):
         Yangi user yaratish
         """
         password = validated_data.pop('password')
-        user = User.objects.create_user(password=password, **validated_data)
+        # Email field ni olib tashlash (agar mavjud bo'lsa)
+        validated_data.pop('email', None)
+        
+        # User yaratish va parolni hash qilish
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
         return user
     
     def update(self, instance, validated_data):
