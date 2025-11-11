@@ -188,14 +188,26 @@ def user_logout(request):
     """
     Foydalanuvchi tizimdan chiqish endpoint-i
     """
-    # Faqat autentifikatsiya qilingan foydalanuvchi uchun logout
-    if not request.user or not request.user.is_authenticated:
+    # Manually authenticate the user since we use AllowAny
+    from rest_framework.authentication import TokenAuthentication
+    auth = TokenAuthentication()
+    try:
+        user, token = auth.authenticate(request)
+        if user and user.is_authenticated:
+            request.user = user
+        else:
+            return Response({
+                'error': 'Avval tizimga kiring!'
+            }, status=status.HTTP_401_UNAUTHORIZED)
+    except:
         return Response({
             'error': 'Avval tizimga kiring!'
         }, status=status.HTTP_401_UNAUTHORIZED)
+
+    # Faqat autentifikatsiya qilingan foydalanuvchi uchun logout
     try:
-        token = Token.objects.get(user=request.user)
-        token.delete()
+        token_obj = Token.objects.get(user=request.user)
+        token_obj.delete()
         return Response({
             'message': 'Muvaffaqiyatli logout!'
         }, status=status.HTTP_200_OK)
