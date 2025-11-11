@@ -230,12 +230,24 @@ class OrderListSerializer(serializers.ModelSerializer):
         source='client.address', 
         read_only=True
     )
+    client_longitude = serializers.DecimalField(
+        source='client.longitude',
+        max_digits=10,
+        decimal_places=7,
+        read_only=True
+    )
+    client_latitude = serializers.DecimalField(
+        source='client.latitude',
+        max_digits=10,
+        decimal_places=7,
+        read_only=True
+    )
     
     class Meta:
         model = Order
         fields = [
             'id', 'client_full_name', 'client_phone_number', 'client_address',
-            'status', 'baklashka_soni', 'kuler_soni', 'price',
+            'client_longitude', 'client_latitude', 'status', 'baklashka_soni', 'kuler_soni', 'price',
             'created_at', 'updated_at', 'created_by_username', 'assigned_to_username'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
