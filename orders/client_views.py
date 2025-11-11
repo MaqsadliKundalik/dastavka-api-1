@@ -5,12 +5,13 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiExample, OpenApiResponse
 from .models import Client
 from .serializers import ClientSerializer
+from .filters import ClientFilter
 
 
 @extend_schema_view(
     list=extend_schema(
         summary="Barcha mijozlarni ko'rish",
-        description="Tizimda ro'yxatdan o'tgan barcha mijozlarni ko'rish. Filter, search va pagination qo'llab-quvvatlanadi.",
+        description="Tizimda ro'yxatdan o'tgan barcha mijozlarni ko'rish. Filter (id bo'yicha), search va pagination qo'llab-quvvatlanadi.",
         tags=["Clients"]
     ),
     create=extend_schema(
@@ -46,6 +47,7 @@ class ClientListCreateView(generics.ListCreateAPIView):
     serializer_class = ClientSerializer
     permission_classes = [permissions.AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_class = ClientFilter
     search_fields = ['full_name', 'phone_number', 'address']
     ordering_fields = ['created_at', 'updated_at', 'full_name']
     ordering = ['-created_at']
