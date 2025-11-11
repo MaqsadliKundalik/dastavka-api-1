@@ -79,7 +79,7 @@ class UsersAPITestCase(TestCase):
 		self.assertFalse(token_exists)
 
 	def test_user_logout_unauthenticated(self):
-		# logout without authentication
+		# logout without authentication should still succeed
 		resp = self.client.post('/api/users/logout/')
-		self.assertEqual(resp.status_code, 401)
-		self.assertIn('error', resp.data)
+		self.assertEqual(resp.status_code, 200)
+		self.assertIn('message', resp.data)

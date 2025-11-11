@@ -188,33 +188,26 @@ def user_logout(request):
     """
     Foydalanuvchi tizimdan chiqish endpoint-i
     """
-    # Manually authenticate the user since we use AllowAny
+    # Agar autentifikatsiya qilingan bo'lsa, tokenni o'chirish
     from rest_framework.authentication import TokenAuthentication
     auth = TokenAuthentication()
     try:
         user, token = auth.authenticate(request)
         if user and user.is_authenticated:
-            request.user = user
-        else:
-            return Response({
-                'error': 'Avval tizimga kiring!'
-            }, status=status.HTTP_401_UNAUTHORIZED)
+            # Tokenni o'chirish
+            try:
+                token_obj = Token.objects.get(user=user)
+                token_obj.delete()
+            except Token.DoesNotExist:
+                pass  # Token allaqachon o'chirilgan bo'lishi mumkin
     except:
-        return Response({
-            'error': 'Avval tizimga kiring!'
-        }, status=status.HTTP_401_UNAUTHORIZED)
+        # Autentifikatsiya muvaffaqiyatsiz, lekin logout har doim muvaffaqiyatli
+        pass
 
-    # Faqat autentifikatsiya qilingan foydalanuvchi uchun logout
-    try:
-        token_obj = Token.objects.get(user=request.user)
-        token_obj.delete()
-        return Response({
-            'message': 'Muvaffaqiyatli logout!'
-        }, status=status.HTTP_200_OK)
-    except Token.DoesNotExist:
-        return Response({
-            'error': 'Token topilmadi!'
-        }, status=status.HTTP_400_BAD_REQUEST)
+    # Logout har doim muvaffaqiyatli, chunki client tokenni localda o'chiradi
+    return Response({
+        'message': 'Muvaffaqiyatli logout!'
+    }, status=status.HTTP_200_OK)
 
 
 @extend_schema(
