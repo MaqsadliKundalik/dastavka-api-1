@@ -219,10 +219,11 @@ def user_profile(request):
     """
     Foydalanuvchi profili ko'rish va yangilash endpoint-i
     """
+    if not request.user or not request.user.is_authenticated:
+        return Response({'error': 'Avval tizimga kiring!'}, status=status.HTTP_401_UNAUTHORIZED)
     if request.method == 'GET':
         serializer = UserProfileSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
     elif request.method in ['PUT', 'PATCH']:
         serializer = UserProfileSerializer(request.user, data=request.data, partial=True)
         if serializer.is_valid():
