@@ -11,8 +11,8 @@ class ClientSerializer(serializers.ModelSerializer):
         from django.utils import timezone
         # Oxirgi buyurtmasini topamiz
         last_order = Order.objects.filter(client=obj).order_by('-created_at').first()
-        if not last_order:
-            return True  # Hech qachon zakaz bermaganlar ham xavfli
+        if not last_order or not last_order.created_at:
+            return True  # Hech qachon zakaz bermaganlar yoki created_at null bo'lganlar ham xavfli
         # Hozirgi sana
         now = timezone.now().date()
         # created_at endi DateField

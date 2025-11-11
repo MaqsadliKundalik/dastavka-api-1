@@ -72,7 +72,8 @@ class UsersAPITestCase(TestCase):
 		# logout
 		resp2 = self.client.post('/api/users/logout/')
 		self.assertEqual(resp2.status_code, 200)
-		self.assertIn('message', resp2.data)
+		self.assertIn('success', resp2.data)
+		self.assertTrue(resp2.data['success'])
 
 		# verify token was deleted
 		token_exists = Token.objects.filter(user=self.user).exists()
@@ -82,4 +83,5 @@ class UsersAPITestCase(TestCase):
 		# logout without authentication should still succeed
 		resp = self.client.post('/api/users/logout/')
 		self.assertEqual(resp.status_code, 200)
-		self.assertIn('message', resp.data)
+		self.assertIn('success', resp.data)
+		self.assertTrue(resp.data['success'])
