@@ -174,7 +174,7 @@ def user_login(request):
             examples=[
                 OpenApiExample(
                     'Logout muvaffaqiyatli',
-                    value={"message": "Muvaffaqiyatli logout!"}
+                    value={"success": True}
                 )
             ]
         ),
@@ -206,7 +206,7 @@ def user_logout(request):
 
     # Logout har doim muvaffaqiyatli, chunki client tokenni localda o'chiradi
     return Response({
-        'message': 'Muvaffaqiyatli logout!'
+        'success': True
     }, status=status.HTTP_200_OK)
 
 
