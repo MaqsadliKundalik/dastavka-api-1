@@ -64,12 +64,12 @@ def calculate_order_stats(queryset, period_name, start_date, end_date):
     completed_orders = queryset.filter(status='completed').count()
     cancelled_orders = queryset.filter(status='cancelled').count()
     
-    # Baklashka va kuler sonlari
+    # Baklashka, kuler va narx yig'indilari
     aggregates = queryset.aggregate(
         total_baklashka=Sum('baklashka_soni'),
-        total_kuler=Sum('kuler_soni')
+        total_kuler=Sum('kuler_soni'),
+        total_price=Sum('price')
     )
-    
     return {
         'period': period_name,
         'total_orders': total_orders,
@@ -79,6 +79,7 @@ def calculate_order_stats(queryset, period_name, start_date, end_date):
         'cancelled_orders': cancelled_orders,
         'total_baklashka': aggregates['total_baklashka'] or 0,
         'total_kuler': aggregates['total_kuler'] or 0,
+        'total_price': aggregates['total_price'] or 0,
         'start_date': start_date,
         'end_date': end_date
     }
@@ -113,15 +114,16 @@ def get_daily_breakdown(start_date, end_date):
         
         aggregates = day_orders.aggregate(
             total_baklashka=Sum('baklashka_soni'),
-            total_kuler=Sum('kuler_soni')
+            total_kuler=Sum('kuler_soni'),
+            total_price=Sum('price')
         )
-        
         daily_stats.append({
             'date': current_date,
             'total_orders': day_orders.count(),
             'completed_orders': day_completed.count(),
             'total_baklashka': aggregates['total_baklashka'] or 0,
             'total_kuler': aggregates['total_kuler'] or 0,
+            'total_price': aggregates['total_price'] or 0,
         })
         
         current_date += timedelta(days=1)

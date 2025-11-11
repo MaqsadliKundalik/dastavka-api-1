@@ -188,6 +188,11 @@ def user_logout(request):
     """
     Foydalanuvchi tizimdan chiqish endpoint-i
     """
+    # Faqat autentifikatsiya qilingan foydalanuvchi uchun logout
+    if not request.user or not request.user.is_authenticated:
+        return Response({
+            'error': 'Avval tizimga kiring!'
+        }, status=status.HTTP_401_UNAUTHORIZED)
     try:
         token = Token.objects.get(user=request.user)
         token.delete()

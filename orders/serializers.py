@@ -4,6 +4,21 @@ from users.models import User
 
 
 class ClientSerializer(serializers.ModelSerializer):
+    is_danger = serializers.SerializerMethodField(help_text="1 oydan beri zakaz bermagan mijozlar uchun True, aks holda False")
+
+    def get_is_danger(self, obj):
+        from datetime import timedelta
+        from django.utils import timezone
+        # Oxirgi buyurtmasini topamiz
+        last_order = Order.objects.filter(client=obj).order_by('-created_at').first()
+        if not last_order:
+            return True  # Hech qachon zakaz bermaganlar ham xavfli
+        # Hozirgi sana
+        now = timezone.now().date()
+        # created_at endi DateField
+        if (now - last_order.created_at).days >= 30:
+            return True
+        return False
     """
     Client modelini serialize qilish uchun serializer
     """
@@ -11,9 +26,9 @@ class ClientSerializer(serializers.ModelSerializer):
         model = Client
         fields = [
             'id', 'full_name', 'phone_number', 'address', 
-            'longitude', 'latitude', 'notes', 'created_at', 'updated_at'
+            'longitude', 'latitude', 'notes', 'created_at', 'updated_at', 'is_danger'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'is_danger']
         extra_kwargs = {
             'full_name': {'help_text': 'Mijozning to\'liq ism-familyasi'},
             'phone_number': {'help_text': 'Mijozning telefon raqami'},
@@ -53,13 +68,14 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = [
             'id', 'client', 'client_id', 'baklashka_soni', 'kuler_soni',
-            'notes', 'status', 'created_at', 'updated_at', 'created_by', 
+            'price', 'notes', 'status', 'created_at', 'updated_at', 'created_by', 
             'assigned_to', 'created_by_username', 'assigned_to_username'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at', 'created_by_username', 'assigned_to_username']
         extra_kwargs = {
             'baklashka_soni': {'help_text': 'Baklashkalar soni'},
             'kuler_soni': {'help_text': 'Kulerlar soni'},
+            'price': {'help_text': 'Buyurtma narxi (so\'mda)'},
             'notes': {'help_text': 'Buyurtma haqida qo\'shimcha izohlar (ixtiyoriy)'},
             'status': {'help_text': 'Buyurtma holati'},
             'assigned_to': {'help_text': 'Tayinlangan kuryer (ixtiyoriy)'},
@@ -98,11 +114,12 @@ class OrderCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
-            'client_id', 'baklashka_soni', 'kuler_soni', 'notes', 'assigned_to'
+            'client_id', 'baklashka_soni', 'kuler_soni', 'price', 'notes', 'assigned_to'
         ]
         extra_kwargs = {
             'baklashka_soni': {'help_text': 'Baklashkalar soni (default: 0)'},
             'kuler_soni': {'help_text': 'Kulerlar soni (default: 0)'},
+            'price': {'help_text': 'Buyurtma narxi (so\'mda)'},
             'notes': {'help_text': 'Buyurtma haqida qo\'shimcha izohlar (ixtiyoriy)'},
             'assigned_to': {'help_text': 'Tayinlangan kuryer (ixtiyoriy)'},
         }
@@ -157,12 +174,13 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
-            'client_id', 'baklashka_soni', 'kuler_soni',
+            'client_id', 'baklashka_soni', 'kuler_soni', 'price',
             'notes', 'status', 'assigned_to'
         ]
         extra_kwargs = {
             'baklashka_soni': {'help_text': 'Baklashkalar soni'},
             'kuler_soni': {'help_text': 'Kulerlar soni'},
+            'price': {'help_text': 'Buyurtma narxi (so\'mda)'},
             'notes': {'help_text': 'Buyurtma haqida qo\'shimcha izohlar'},
             'status': {'help_text': 'Buyurtma holati'},
             'assigned_to': {'help_text': 'Tayinlangan kuryer'},
@@ -217,7 +235,7 @@ class OrderListSerializer(serializers.ModelSerializer):
         model = Order
         fields = [
             'id', 'client_full_name', 'client_phone_number', 'client_address',
-            'status', 'baklashka_soni', 'kuler_soni', 
+            'status', 'baklashka_soni', 'kuler_soni', 'price',
             'created_at', 'updated_at', 'created_by_username', 'assigned_to_username'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']

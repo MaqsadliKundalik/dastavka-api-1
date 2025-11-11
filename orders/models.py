@@ -168,13 +168,21 @@ class Order(models.Model):
     )
     
     # Vaqt belgilari
-    created_at = models.DateTimeField(
+    created_at = models.DateField(
         auto_now_add=True,
-        verbose_name="Yaratilgan sana"
+        verbose_name="Yaratilgan sana (sana)"
     )
     updated_at = models.DateTimeField(
         auto_now=True,
         verbose_name="Yangilangan sana"
+    )
+
+    # Buyurtma narxi
+    price = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        verbose_name="Buyurtma narxi (so'm)",
+        default=0
     )
     
     # Qaysi user yaratgan (ixtiyoriy)
