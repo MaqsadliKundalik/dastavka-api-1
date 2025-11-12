@@ -151,6 +151,10 @@ class Order(models.Model):
         default=0,
         verbose_name="Kulerlar soni"
     )
+    pompa_soni = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Pompalar soni"
+    )
     
     # Buyurtma haqida qo'shimcha ma'lumotlar
     notes = models.TextField(

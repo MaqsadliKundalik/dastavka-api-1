@@ -143,18 +143,37 @@ def test_create_order(token):
         "Authorization": f"Token {token}"
     }
     
-    data = {
+    # Avval mijoz yaratish
+    client_data = {
         "full_name": "Ali Valijonov", 
         "phone_number": "+998901234567",
         "address": "Toshkent, Chilonzor tumani, 5-uy",
-        "kiruvchi_soni": 5,
-        "chiquvchi_soni": 2,
-        "notes": "Tez yetkazish kerak, 3-qavat",
         "longitude": "69.240562",
-        "latitude": "41.311081"
+        "latitude": "41.311081",
+        "notes": "Test mijoz"
     }
     
-    response = requests.post(f"{BASE_URL}/orders/", json=data, headers=headers)
+    client_response = requests.post(f"{BASE_URL}/clients/", json=client_data, headers=headers)
+    
+    if client_response.status_code != 201:
+        print(f"❌ Client yaratib bo'lmadi: {client_response.status_code}")
+        print(f"Response: {client_response.text}")
+        return None
+    
+    client_id = client_response.json()['id']
+    print(f"✅ Client yaratildi, ID: {client_id}")
+    
+    # Endi buyurtma yaratish
+    order_data = {
+        "client_id": client_id,
+        "baklashka_soni": 5,
+        "kuler_soni": 2,
+        "pompa_soni": 1,
+        "price": 150000,
+        "notes": "Tez yetkazish kerak, 3-qavat"
+    }
+    
+    response = requests.post(f"{BASE_URL}/orders/", json=order_data, headers=headers)
     
     print(f"Status Code: {response.status_code}")
     print(f"Response: {json.dumps(response.json(), indent=2, ensure_ascii=False)}")
