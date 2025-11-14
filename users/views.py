@@ -14,11 +14,22 @@ from .serializers import (
 )
 
 
+from drf_spectacular.utils import OpenApiParameter
+
 @extend_schema_view(
     list=extend_schema(
         summary="Barcha foydalanuvchilarni ko'rish",
         description="Tizimda ro'yxatdan o'tgan barcha foydalanuvchilarni ko'rish. Faqat autentifikatsiya qilingan foydalanuvchilar uchun.",
-        tags=["Users"]
+        tags=["Users"],
+        parameters=[
+            OpenApiParameter(
+                name="role",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="Foydalanuvchi roli bo'yicha filter (admin yoki kuryer)"
+            )
+        ]
     ),
     create=extend_schema(
         summary="Yangi foydalanuvchi yaratish",

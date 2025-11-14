@@ -1,0 +1,2081 @@
+openapi: 3.0.3
+info:
+  title: Dastavka API
+  version: 1.0.0
+  description: Suv va shunga o'xshash mahsulotlar dastavkasi uchun API
+paths:
+  /api/clients/:
+    get:
+      operationId: clients_list
+      description: Mijozlar ro'yxati va yangi mijoz yaratish
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - clients
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedClientList'
+          description: ''
+    post:
+      operationId: clients_create
+      description: Mijozlar ro'yxati va yangi mijoz yaratish
+      tags:
+      - clients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ClientRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ClientRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+          description: ''
+  /api/clients/{id}/:
+    get:
+      operationId: clients_retrieve
+      description: Bitta mijoz bilan bog'liq CRUD operatsiyalar
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - clients
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+          description: ''
+    put:
+      operationId: clients_update
+      description: Bitta mijoz bilan bog'liq CRUD operatsiyalar
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - clients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ClientRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ClientRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+          description: ''
+    patch:
+      operationId: clients_partial_update
+      description: Bitta mijoz bilan bog'liq CRUD operatsiyalar
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - clients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedClientRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedClientRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedClientRequest'
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+          description: ''
+    delete:
+      operationId: clients_destroy
+      description: Bitta mijoz bilan bog'liq CRUD operatsiyalar
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - clients
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/clients/{id}/orders/:
+    get:
+      operationId: clients_orders_retrieve
+      description: Bitta mijozning barcha buyurtmalarini ko'rish
+      summary: Mijozning buyurtmalari
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Clients
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+                description: Unspecified response body
+          description: ''
+  /api/clients/stats/:
+    get:
+      operationId: clients_stats_retrieve
+      description: Mijozlar haqida umumiy statistika
+      summary: Mijozlar statistikasi
+      tags:
+      - Clients
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          description: Statistika ma'lumotlari
+  /api/orders/:
+    get:
+      operationId: orders_list
+      description: Buyurtmalar ro'yxati va yangi buyurtma yaratish
+      parameters:
+      - in: query
+        name: assigned_to
+        schema:
+          type: integer
+      - in: query
+        name: client_id
+        schema:
+          type: string
+      - in: query
+        name: client_name
+        schema:
+          type: string
+      - in: query
+        name: client_phone
+        schema:
+          type: string
+      - in: query
+        name: created_by
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - bekor_qilindi
+          - kútilmekte
+          - orınlandı
+        description: |-
+          * `kútilmekte` - kútilmekte
+          * `orınlandı` - orınlandı
+          * `bekor_qilindi` - Bekor qilindi
+      tags:
+      - orders
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOrderListList'
+          description: ''
+    post:
+      operationId: orders_create
+      description: Buyurtmalar ro'yxati va yangi buyurtma yaratish
+      tags:
+      - orders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrderCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrderCreateRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderCreate'
+          description: ''
+  /api/orders/{id}/:
+    get:
+      operationId: orders_retrieve
+      description: Bitta buyurtma bilan bog'liq CRUD operatsiyalar
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - orders
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+    put:
+      operationId: orders_update
+      description: Bitta buyurtma bilan bog'liq CRUD operatsiyalar
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - orders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrderUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrderUpdateRequest'
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderUpdate'
+          description: ''
+    patch:
+      operationId: orders_partial_update
+      description: Bitta buyurtma bilan bog'liq CRUD operatsiyalar
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - orders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOrderUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOrderUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOrderUpdateRequest'
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderUpdate'
+          description: ''
+    delete:
+      operationId: orders_destroy
+      description: Bitta buyurtma bilan bog'liq CRUD operatsiyalar
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - orders
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/orders/{id}/assign/:
+    patch:
+      operationId: orders_assign_partial_update
+      description: Buyurtmani kuryerga tayinlash yoki tayinlashni bekor qilish
+      summary: Kuryerga buyurtma tayinlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Orders
+      requestBody:
+        content:
+          type:
+            schema:
+              type: object
+              additionalProperties: {}
+              description: Unspecified request body
+          properties:
+            schema:
+              courier_id:
+                type: integer
+                description: Kuryer ID si (null bo'lsa tayinlash bekor qilinadi)
+                nullable: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          description: Kuryer muvaffaqiyatli tayinlandi
+        '400':
+          description: Noto'g'ri kuryer ID yoki rol
+        '404':
+          description: Buyurtma yoki kuryer topilmadi
+  /api/orders/{id}/status/:
+    patch:
+      operationId: orders_status_partial_update
+      description: Buyurtma statusini tez yangilash uchun endpoint
+      summary: Buyurtma statusini yangilash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Orders
+      requestBody:
+        content:
+          type:
+            schema:
+              type: object
+              additionalProperties: {}
+              description: Unspecified request body
+          properties:
+            schema:
+              status:
+                type: string
+                enum:
+                - kutilmoqda
+                - bajarildi
+                - bekor_qilindi
+                description: Yangi status
+          required:
+            schema:
+              type: object
+              additionalProperties: {}
+              description: Unspecified request body
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          description: Status muvaffaqiyatli yangilandi
+        '400':
+          description: Noto'g'ri status
+        '404':
+          description: Buyurtma topilmadi
+  /api/orders/my/:
+    get:
+      operationId: orders_my_list
+      description: Joriy foydalanuvchi yaratgan yoki tayinlangan buyurtmalar
+      summary: Mening buyurtmalarim
+      tags:
+      - Orders
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderList'
+          description: ''
+  /api/orders/stats/:
+    get:
+      operationId: orders_stats_retrieve
+      description: Belgilangan davr uchun buyurtmalar statistikasini ko'rish. Kunlik,
+        haftalik yoki oylik ma'lumotlar.
+      summary: Buyurtmalar statistikasi
+      parameters:
+      - in: query
+        name: period
+        schema:
+          type: string
+          enum:
+          - month
+          - today
+          - week
+          default: today
+        description: Statistika davri
+        examples:
+          Bugun:
+            value: today
+          ShuHafta:
+            value: week
+            summary: Shu hafta
+          ShuOy:
+            value: month
+            summary: Shu oy
+      tags:
+      - Statistics
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderStatsResponse'
+              examples:
+                KunlikStatistika:
+                  value:
+                    summary:
+                      period: Bugun
+                      total_orders: 15
+                      pending_orders: 3
+                      in_progress_orders: 8
+                      completed_orders: 4
+                      cancelled_orders: 0
+                      total_baklashka: 150
+                      total_kuler: 45
+                      start_date: '2025-11-10T00:00:00Z'
+                      end_date: '2025-11-10T23:59:59Z'
+                    daily_breakdown:
+                    - date: '2025-11-10'
+                      total_orders: 15
+                      completed_orders: 4
+                      total_baklashka: 150
+                      total_kuler: 45
+                    generated_at: '2025-11-10T16:30:00Z'
+                  summary: Kunlik statistika
+          description: Statistika ma'lumotlari
+        '400':
+          description: Noto'g'ri parametrlar
+  /api/orders/stats/couriers/:
+    get:
+      operationId: orders_stats_couriers_retrieve
+      description: Kuryerlarning ish faoliyati statistikasi
+      summary: Kuryerlar statistikasi
+      parameters:
+      - in: query
+        name: period
+        schema:
+          type: string
+          enum:
+          - all
+          - month
+          - today
+          - week
+          default: month
+        description: Statistika davri
+      tags:
+      - Statistics
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CouriersStatsResponse'
+              examples:
+                KuryerlarStatistikasi:
+                  value:
+                    period: Shu oy
+                    couriers_stats:
+                    - courier_id: 2
+                      courier_name: Bobur Karimov
+                      courier_username: bobur_kuryer
+                      assigned_orders: 45
+                      completed_orders: 42
+                      in_progress_orders: 3
+                      completion_rate: 93.3
+                    generated_at: '2025-11-10T16:30:00Z'
+                  summary: Kuryerlar statistikasi
+          description: Kuryerlar statistikasi
+  /api/orders/stats/general/:
+    get:
+      operationId: orders_stats_general_retrieve
+      description: Barcha vaqt uchun umumiy buyurtmalar statistikasi
+      summary: Umumiy statistika
+      tags:
+      - Statistics
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderStats'
+              examples:
+                UmumiyStatistika:
+                  value:
+                    period: Barcha vaqt
+                    total_orders: 1248
+                    pending_orders: 25
+                    in_progress_orders: 47
+                    completed_orders: 1150
+                    cancelled_orders: 26
+                    total_baklashka: 15420
+                    total_kuler: 4850
+                    start_date: '2025-01-01T00:00:00Z'
+                    end_date: '2025-11-10T23:59:59Z'
+                  summary: Umumiy statistika
+          description: Umumiy statistika
+  /api/orders/stats/top-clients/:
+    get:
+      operationId: orders_stats_top_clients_retrieve
+      description: Belgilangan davr uchun eng ko'p buyurtma bergan mijozlar ro'yxati
+      summary: Eng faol mijozlar
+      parameters:
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          default: 10
+        description: Natijalar soni
+      - in: query
+        name: period
+        schema:
+          type: string
+          enum:
+          - all
+          - month
+          - today
+          - week
+          default: month
+        description: Statistika davri
+      tags:
+      - Statistics
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopClientsResponse'
+              examples:
+                EngFaolMijozlar:
+                  value:
+                    period: Shu oy
+                    top_clients:
+                    - client_id: 5
+                      client_name: Anvar Karimov
+                      client_phone: '+998901234567'
+                      total_orders: 25
+                      total_baklashka: 250
+                      total_kuler: 75
+                      last_order_date: '2025-11-10T14:30:00Z'
+                    generated_at: '2025-11-10T16:30:00Z'
+                  summary: Eng faol mijozlar
+          description: Eng faol mijozlar
+  /api/users/:
+    get:
+      operationId: users_list
+      description: Foydalanuvchilar ro'yxati va yangi foydalanuvchi yaratish endpoint-i
+      tags:
+      - users
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+          description: ''
+    post:
+      operationId: users_create
+      description: Foydalanuvchilar ro'yxati va yangi foydalanuvchi yaratish endpoint-i
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/users/{id}/:
+    get:
+      operationId: users_retrieve
+      description: Bitta foydalanuvchi bilan bog'liq CRUD operatsiyalar
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - users
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: users_update
+      description: Bitta foydalanuvchi bilan bog'liq CRUD operatsiyalar
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: users_partial_update
+      description: Bitta foydalanuvchi bilan bog'liq CRUD operatsiyalar
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    delete:
+      operationId: users_destroy
+      description: Bitta foydalanuvchi bilan bog'liq CRUD operatsiyalar
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - users
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/users/login/:
+    post:
+      operationId: users_login_create
+      description: Username va parol bilan tizimga kirish va token olish
+      summary: Foydalanuvchi tizimga kirish
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserLoginRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserLoginRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          description: Muvaffaqiyatli kirish
+        '400':
+          description: Noto'g'ri login ma'lumotlari
+  /api/users/logout/:
+    post:
+      operationId: users_logout_create
+      description: Foydalanuvchining tokenini bekor qilish va tizimdan chiqish
+      summary: Foydalanuvchi tizimdan chiqish
+      tags:
+      - Authentication
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          description: Muvaffaqiyatli chiqish
+        '400':
+          description: Token topilmadi
+  /api/users/profile/:
+    get:
+      operationId: users_profile_retrieve
+      description: Joriy foydalanuvchining profil ma'lumotlarini ko'rish yoki yangilash
+      summary: Foydalanuvchi profili
+      tags:
+      - Profile
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    put:
+      operationId: users_profile_update
+      description: Joriy foydalanuvchining profil ma'lumotlarini ko'rish yoki yangilash
+      summary: Foydalanuvchi profili
+      tags:
+      - Profile
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    patch:
+      operationId: users_profile_partial_update
+      description: Joriy foydalanuvchining profil ma'lumotlarini ko'rish yoki yangilash
+      summary: Foydalanuvchi profili
+      tags:
+      - Profile
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+  /api/users/register/:
+    post:
+      operationId: users_register_create
+      description: Yangi foydalanuvchi ro'yxatdan o'tish va avtomatik token olish
+      summary: Foydalanuvchi ro'yxatdan o'tish
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistrationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRegistrationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRegistrationRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+              examples:
+                MuvaffaqiyatliJavob:
+                  value:
+                    message: User muvaffaqiyatli ro'yxatdan o'tdi!
+                    user:
+                      id: 1
+                      username: test_user
+                      full_name: Test User
+                      role: kuryer
+                      status: active
+                    token: abc123token
+                  summary: Muvaffaqiyatli javob
+          description: Muvaffaqiyatli ro'yxatdan o'tish
+        '400':
+          description: Noto'g'ri ma'lumotlar
+components:
+  schemas:
+    Client:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          title: Ism-familya
+          description: Mijozning to'liq ism-familyasi
+          maxLength: 255
+        phone_number:
+          type: string
+          title: Telefon raqam
+          description: Mijozning telefon raqami
+          maxLength: 20
+        address:
+          type: string
+          title: To'liq manzil
+          description: To'liq manzil
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,7})?$
+          nullable: true
+          description: GPS uzunlik kordinatasi (ixtiyoriy)
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,7})?$
+          nullable: true
+          description: GPS kenglik kordinatasi (ixtiyoriy)
+        notes:
+          type: string
+          nullable: true
+          title: Mijoz haqida izoh
+          description: Mijoz haqida qo'shimcha ma'lumotlar (ixtiyoriy)
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Yaratilgan sana
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Yangilangan sana
+        is_danger:
+          type: string
+          readOnly: true
+          description: 1 oydan beri zakaz bermagan mijozlar uchun True, aks holda
+            False
+      required:
+      - address
+      - created_at
+      - full_name
+      - id
+      - is_danger
+      - phone_number
+      - updated_at
+    ClientRequest:
+      type: object
+      properties:
+        full_name:
+          type: string
+          minLength: 1
+          title: Ism-familya
+          description: Mijozning to'liq ism-familyasi
+          maxLength: 255
+        phone_number:
+          type: string
+          minLength: 1
+          title: Telefon raqam
+          description: Mijozning telefon raqami
+          maxLength: 20
+        address:
+          type: string
+          minLength: 1
+          title: To'liq manzil
+          description: To'liq manzil
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,7})?$
+          nullable: true
+          description: GPS uzunlik kordinatasi (ixtiyoriy)
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,7})?$
+          nullable: true
+          description: GPS kenglik kordinatasi (ixtiyoriy)
+        notes:
+          type: string
+          nullable: true
+          title: Mijoz haqida izoh
+          description: Mijoz haqida qo'shimcha ma'lumotlar (ixtiyoriy)
+      required:
+      - address
+      - full_name
+      - phone_number
+    CourierStats:
+      type: object
+      description: Kuryer statistikasi uchun serializer
+      properties:
+        courier_id:
+          type: integer
+          readOnly: true
+          description: Kuryer ID
+        courier_name:
+          type: string
+          readOnly: true
+          description: Kuryer ismi
+        courier_username:
+          type: string
+          readOnly: true
+          description: Kuryer username
+        assigned_orders:
+          type: integer
+          readOnly: true
+          description: Tayinlangan buyurtmalar
+        completed_orders:
+          type: integer
+          readOnly: true
+          description: Yakunlangan buyurtmalar
+        in_progress_orders:
+          type: integer
+          readOnly: true
+          description: Jarayondagi buyurtmalar
+        completion_rate:
+          type: number
+          format: double
+          readOnly: true
+          description: Yakunlash foizi
+      required:
+      - assigned_orders
+      - completed_orders
+      - completion_rate
+      - courier_id
+      - courier_name
+      - courier_username
+      - in_progress_orders
+    CouriersStatsResponse:
+      type: object
+      description: Kuryerlar statistikasi javob serializer
+      properties:
+        period:
+          type: string
+          readOnly: true
+          description: Davr
+        couriers_stats:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourierStats'
+          readOnly: true
+          description: Kuryerlar statistikasi
+        generated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Yaratilgan vaqt
+      required:
+      - couriers_stats
+      - generated_at
+      - period
+    DailyStats:
+      type: object
+      description: Kunlik statistika uchun serializer
+      properties:
+        date:
+          type: string
+          format: date
+          readOnly: true
+          description: Sana
+        total_orders:
+          type: integer
+          readOnly: true
+          description: Kun davomida yaratilgan buyurtmalar
+        completed_orders:
+          type: integer
+          readOnly: true
+          description: Kun davomida yakunlangan buyurtmalar
+        total_baklashka:
+          type: integer
+          readOnly: true
+          description: Kun davomida jami baklashkalar
+        total_kuler:
+          type: integer
+          readOnly: true
+          description: Kun davomida jami kulerlar
+        total_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+          description: Kun davomida jami buyurtmalar narxi (so'mda)
+      required:
+      - completed_orders
+      - date
+      - total_baklashka
+      - total_kuler
+      - total_orders
+      - total_price
+    Order:
+      type: object
+      description: Order modelini serialize qilish uchun asosiy serializer
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          title: Buyurtma ID
+        client:
+          allOf:
+          - $ref: '#/components/schemas/Client'
+          readOnly: true
+        baklashka_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Baklashkalar soni
+          description: Baklashkalar soni
+        kuler_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Kulerlar soni
+          description: Kulerlar soni
+        pompa_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Pompalar soni
+          description: Pompa soni
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          title: Buyurtma narxi (so'm)
+          description: Buyurtma narxi (so'mda)
+        notes:
+          type: string
+          nullable: true
+          title: Buyurtma haqida izoh
+          description: Buyurtma haqida qo'shimcha izohlar (ixtiyoriy)
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusCfdEnum'
+          description: |-
+            Buyurtma holati
+
+            * `kútilmekte` - kútilmekte
+            * `orınlandı` - orınlandı
+            * `bekor_qilindi` - Bekor qilindi
+        created_at:
+          type: string
+          format: date
+          readOnly: true
+          title: Yaratilgan sana (sana)
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Yangilangan sana
+        created_by:
+          type: integer
+          nullable: true
+          title: Yaratuvchi
+        assigned_to:
+          type: integer
+          nullable: true
+          title: Tayinlangan kuryer
+          description: Tayinlangan kuryer (ixtiyoriy)
+        created_by_username:
+          type: string
+          readOnly: true
+          description: Yaratuvchi foydalanuvchi nomi
+        assigned_to_username:
+          type: string
+          readOnly: true
+          description: Tayinlangan kuryer nomi
+      required:
+      - assigned_to_username
+      - client
+      - created_at
+      - created_by_username
+      - id
+      - updated_at
+    OrderCreate:
+      type: object
+      description: |-
+        Yangi buyurtma yaratish uchun serializer.
+        Faqat mavjud mijoz ID si bilan buyurtma yaratish.
+      properties:
+        client_id:
+          type: integer
+          description: Mavjud mijozning ID raqami
+        baklashka_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Baklashkalar soni
+          description: 'Baklashkalar soni (default: 0)'
+        kuler_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Kulerlar soni
+          description: 'Kulerlar soni (default: 0)'
+        pompa_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Pompalar soni
+          description: 'Pompa soni (default: 0)'
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          title: Buyurtma narxi (so'm)
+          description: Buyurtma narxi (so'mda)
+        notes:
+          type: string
+          nullable: true
+          title: Buyurtma haqida izoh
+          description: Buyurtma haqida qo'shimcha izohlar (ixtiyoriy)
+        assigned_to:
+          type: integer
+          nullable: true
+          title: Tayinlangan kuryer
+          description: Tayinlangan kuryer (ixtiyoriy)
+      required:
+      - client_id
+    OrderCreateRequest:
+      type: object
+      description: |-
+        Yangi buyurtma yaratish uchun serializer.
+        Faqat mavjud mijoz ID si bilan buyurtma yaratish.
+      properties:
+        client_id:
+          type: integer
+          description: Mavjud mijozning ID raqami
+        baklashka_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Baklashkalar soni
+          description: 'Baklashkalar soni (default: 0)'
+        kuler_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Kulerlar soni
+          description: 'Kulerlar soni (default: 0)'
+        pompa_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Pompalar soni
+          description: 'Pompa soni (default: 0)'
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          title: Buyurtma narxi (so'm)
+          description: Buyurtma narxi (so'mda)
+        notes:
+          type: string
+          nullable: true
+          title: Buyurtma haqida izoh
+          description: Buyurtma haqida qo'shimcha izohlar (ixtiyoriy)
+        assigned_to:
+          type: integer
+          nullable: true
+          title: Tayinlangan kuryer
+          description: Tayinlangan kuryer (ixtiyoriy)
+      required:
+      - client_id
+    OrderList:
+      type: object
+      description: Buyurtmalar ro'yxati uchun qisqartirilgan serializer
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          title: Buyurtma ID
+        client_full_name:
+          type: string
+          readOnly: true
+        client_phone_number:
+          type: string
+          readOnly: true
+        client_address:
+          type: string
+          readOnly: true
+        client_longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,7})?$
+          readOnly: true
+        client_latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,7})?$
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/StatusCfdEnum'
+        baklashka_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Baklashkalar soni
+        kuler_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Kulerlar soni
+        pompa_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Pompalar soni
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          title: Buyurtma narxi (so'm)
+        created_at:
+          type: string
+          format: date
+          readOnly: true
+          title: Yaratilgan sana (sana)
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Yangilangan sana
+        created_by_username:
+          type: string
+          readOnly: true
+        assigned_to_username:
+          type: string
+          readOnly: true
+      required:
+      - assigned_to_username
+      - client_address
+      - client_full_name
+      - client_latitude
+      - client_longitude
+      - client_phone_number
+      - created_at
+      - created_by_username
+      - id
+      - updated_at
+    OrderStats:
+      type: object
+      description: Buyurtmalar statistikasi uchun serializer
+      properties:
+        period:
+          type: string
+          readOnly: true
+          description: Davr nomi
+        total_orders:
+          type: integer
+          readOnly: true
+          description: Jami buyurtmalar soni
+        pending_orders:
+          type: integer
+          readOnly: true
+          description: Kutilayotgan buyurtmalar
+        in_progress_orders:
+          type: integer
+          readOnly: true
+          description: Jarayonda bo'lgan buyurtmalar
+        completed_orders:
+          type: integer
+          readOnly: true
+          description: Yakunlangan buyurtmalar
+        cancelled_orders:
+          type: integer
+          readOnly: true
+          description: Bekor qilingan buyurtmalar
+        total_baklashka:
+          type: integer
+          readOnly: true
+          description: Jami baklashkalar soni
+        total_kuler:
+          type: integer
+          readOnly: true
+          description: Jami kulerlar soni
+        total_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+          description: Jami buyurtmalar narxi (so'mda)
+        start_date:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Davr boshlanish sanasi
+        end_date:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Davr tugash sanasi
+      required:
+      - cancelled_orders
+      - completed_orders
+      - end_date
+      - in_progress_orders
+      - pending_orders
+      - period
+      - start_date
+      - total_baklashka
+      - total_kuler
+      - total_orders
+      - total_price
+    OrderStatsResponse:
+      type: object
+      description: Statistika javob uchun asosiy serializer
+      properties:
+        summary:
+          allOf:
+          - $ref: '#/components/schemas/OrderStats'
+          readOnly: true
+          description: Umumiy statistika
+        daily_breakdown:
+          type: array
+          items:
+            $ref: '#/components/schemas/DailyStats'
+          readOnly: true
+          description: Kunlik taqsimot
+        generated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Hisobot yaratilgan vaqt
+      required:
+      - daily_breakdown
+      - generated_at
+      - summary
+    OrderUpdate:
+      type: object
+      description: Buyurtmani yangilash uchun serializer
+      properties:
+        client_id:
+          type: integer
+          description: Mijozni o'zgartirish uchun mijoz ID raqami (ixtiyoriy)
+        baklashka_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Baklashkalar soni
+          description: Baklashkalar soni
+        kuler_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Kulerlar soni
+          description: Kulerlar soni
+        pompa_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Pompalar soni
+          description: Pompa soni
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          title: Buyurtma narxi (so'm)
+          description: Buyurtma narxi (so'mda)
+        notes:
+          type: string
+          nullable: true
+          title: Buyurtma haqida izoh
+          description: Buyurtma haqida qo'shimcha izohlar
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusCfdEnum'
+          description: |-
+            Buyurtma holati
+
+            * `kútilmekte` - kútilmekte
+            * `orınlandı` - orınlandı
+            * `bekor_qilindi` - Bekor qilindi
+        assigned_to:
+          type: integer
+          nullable: true
+          title: Tayinlangan kuryer
+          description: Tayinlangan kuryer
+    OrderUpdateRequest:
+      type: object
+      description: Buyurtmani yangilash uchun serializer
+      properties:
+        client_id:
+          type: integer
+          description: Mijozni o'zgartirish uchun mijoz ID raqami (ixtiyoriy)
+        baklashka_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Baklashkalar soni
+          description: Baklashkalar soni
+        kuler_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Kulerlar soni
+          description: Kulerlar soni
+        pompa_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Pompalar soni
+          description: Pompa soni
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          title: Buyurtma narxi (so'm)
+          description: Buyurtma narxi (so'mda)
+        notes:
+          type: string
+          nullable: true
+          title: Buyurtma haqida izoh
+          description: Buyurtma haqida qo'shimcha izohlar
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusCfdEnum'
+          description: |-
+            Buyurtma holati
+
+            * `kútilmekte` - kútilmekte
+            * `orınlandı` - orınlandı
+            * `bekor_qilindi` - Bekor qilindi
+        assigned_to:
+          type: integer
+          nullable: true
+          title: Tayinlangan kuryer
+          description: Tayinlangan kuryer
+    PaginatedClientList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Client'
+    PaginatedOrderListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderList'
+    PatchedClientRequest:
+      type: object
+      properties:
+        full_name:
+          type: string
+          minLength: 1
+          title: Ism-familya
+          description: Mijozning to'liq ism-familyasi
+          maxLength: 255
+        phone_number:
+          type: string
+          minLength: 1
+          title: Telefon raqam
+          description: Mijozning telefon raqami
+          maxLength: 20
+        address:
+          type: string
+          minLength: 1
+          title: To'liq manzil
+          description: To'liq manzil
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,7})?$
+          nullable: true
+          description: GPS uzunlik kordinatasi (ixtiyoriy)
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,7})?$
+          nullable: true
+          description: GPS kenglik kordinatasi (ixtiyoriy)
+        notes:
+          type: string
+          nullable: true
+          title: Mijoz haqida izoh
+          description: Mijoz haqida qo'shimcha ma'lumotlar (ixtiyoriy)
+    PatchedOrderUpdateRequest:
+      type: object
+      description: Buyurtmani yangilash uchun serializer
+      properties:
+        client_id:
+          type: integer
+          description: Mijozni o'zgartirish uchun mijoz ID raqami (ixtiyoriy)
+        baklashka_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Baklashkalar soni
+          description: Baklashkalar soni
+        kuler_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Kulerlar soni
+          description: Kulerlar soni
+        pompa_soni:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: Pompalar soni
+          description: Pompa soni
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          title: Buyurtma narxi (so'm)
+          description: Buyurtma narxi (so'mda)
+        notes:
+          type: string
+          nullable: true
+          title: Buyurtma haqida izoh
+          description: Buyurtma haqida qo'shimcha izohlar
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusCfdEnum'
+          description: |-
+            Buyurtma holati
+
+            * `kútilmekte` - kútilmekte
+            * `orınlandı` - orınlandı
+            * `bekor_qilindi` - Bekor qilindi
+        assigned_to:
+          type: integer
+          nullable: true
+          title: Tayinlangan kuryer
+          description: Tayinlangan kuryer
+    PatchedUserRequest:
+      type: object
+      description: |-
+        Foydalanuvchi ma'lumotlarini serialize qilish uchun serializer.
+        Barcha CRUD operatsiyalar uchun ishlatiladi.
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+          description: Kamida 8 ta belgi bo'lishi kerak
+        full_name:
+          type: string
+          minLength: 1
+          title: Ism-Familya
+          maxLength: 255
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          title: Rol
+        status:
+          $ref: '#/components/schemas/StatusA3eEnum'
+    RoleEnum:
+      enum:
+      - admin
+      - kuryer
+      type: string
+      description: |-
+        * `admin` - Admin
+        * `kuryer` - Kuryer
+    StatusA3eEnum:
+      enum:
+      - active
+      - inactive
+      type: string
+      description: |-
+        * `active` - Active
+        * `inactive` - Inactive
+    StatusCfdEnum:
+      enum:
+      - kútilmekte
+      - orınlandı
+      - bekor_qilindi
+      type: string
+      description: |-
+        * `kútilmekte` - kútilmekte
+        * `orınlandı` - orınlandı
+        * `bekor_qilindi` - Bekor qilindi
+    TopClient:
+      type: object
+      description: Eng faol mijozlar uchun serializer
+      properties:
+        client_id:
+          type: integer
+          readOnly: true
+          description: Mijoz ID
+        client_name:
+          type: string
+          readOnly: true
+          description: Mijoz ismi
+        client_phone:
+          type: string
+          readOnly: true
+          description: Mijoz telefoni
+        total_orders:
+          type: integer
+          readOnly: true
+          description: Jami buyurtmalar soni
+        total_baklashka:
+          type: integer
+          readOnly: true
+          description: Jami baklashkalar soni
+        total_kuler:
+          type: integer
+          readOnly: true
+          description: Jami kulerlar soni
+        last_order_date:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Oxirgi buyurtma sanasi
+      required:
+      - client_id
+      - client_name
+      - client_phone
+      - last_order_date
+      - total_baklashka
+      - total_kuler
+      - total_orders
+    TopClientsResponse:
+      type: object
+      description: Eng faol mijozlar javob serializer
+      properties:
+        period:
+          type: string
+          readOnly: true
+          description: Davr
+        top_clients:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopClient'
+          readOnly: true
+          description: Eng faol mijozlar
+        generated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Yaratilgan vaqt
+      required:
+      - generated_at
+      - period
+      - top_clients
+    User:
+      type: object
+      description: |-
+        Foydalanuvchi ma'lumotlarini serialize qilish uchun serializer.
+        Barcha CRUD operatsiyalar uchun ishlatiladi.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        full_name:
+          type: string
+          title: Ism-Familya
+          maxLength: 255
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          title: Rol
+        status:
+          $ref: '#/components/schemas/StatusA3eEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Yaratilgan sana
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Yangilangan sana
+      required:
+      - created_at
+      - full_name
+      - id
+      - updated_at
+      - username
+    UserLoginRequest:
+      type: object
+      description: |-
+        Foydalanuvchi tizimga kirish uchun serializer.
+        Username va parol orqali autentifikatsiya.
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Foydalanuvchi nomi
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          description: Parol
+      required:
+      - password
+      - username
+    UserProfile:
+      type: object
+      description: |-
+        Foydalanuvchi profili ko'rish va yangilash uchun serializer.
+        Parol maydonisiz, xavfsiz profil ma'lumotlari.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+        full_name:
+          type: string
+          title: Ism-Familya
+          description: To'liq ism-familya
+          maxLength: 255
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          title: Rol
+          description: |-
+            Foydalanuvchi roli (admin/kuryer)
+
+            * `admin` - Admin
+            * `kuryer` - Kuryer
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusA3eEnum'
+          description: |-
+            Hisobning holati (active/inactive)
+
+            * `active` - Active
+            * `inactive` - Inactive
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Yaratilgan sana
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Yangilangan sana
+      required:
+      - created_at
+      - full_name
+      - id
+      - updated_at
+      - username
+    UserRegistrationRequest:
+      type: object
+      description: |-
+        Yangi foydalanuvchi ro'yxatdan o'tish uchun serializer.
+        Parol tasdiqlash va validatsiya mavjud.
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+          description: Kamida 8 ta belgi bo'lishi kerak
+        password_confirm:
+          type: string
+          writeOnly: true
+          minLength: 1
+          description: Parolni tasdiqlash uchun
+        full_name:
+          type: string
+          minLength: 1
+          title: Ism-Familya
+          maxLength: 255
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          title: Rol
+      required:
+      - full_name
+      - password
+      - password_confirm
+      - username
+    UserRequest:
+      type: object
+      description: |-
+        Foydalanuvchi ma'lumotlarini serialize qilish uchun serializer.
+        Barcha CRUD operatsiyalar uchun ishlatiladi.
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+          description: Kamida 8 ta belgi bo'lishi kerak
+        full_name:
+          type: string
+          minLength: 1
+          title: Ism-Familya
+          maxLength: 255
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          title: Rol
+        status:
+          $ref: '#/components/schemas/StatusA3eEnum'
+      required:
+      - full_name
+      - password
+      - username
+  securitySchemes:
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Token"
