@@ -30,9 +30,18 @@ class UserListCreateView(generics.ListCreateAPIView):
     """
     Foydalanuvchilar ro'yxati va yangi foydalanuvchi yaratish endpoint-i
     """
-    queryset = User.objects.all()
+
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        queryset = User.objects.all()
+        role = self.request.query_params.get('role')
+        if role:
+            queryset = queryset.filter(role=role)
+        return queryset
+
+    pagination_class = None  # Remove pagination for this endpoint
 
 
 @extend_schema_view(
