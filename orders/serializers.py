@@ -210,6 +210,8 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
 
 
 class OrderListSerializer(serializers.ModelSerializer):
+    client_id = serializers.IntegerField(source='client.id', read_only=True)
+    assigned_id = serializers.IntegerField(source='assigned_to.id', read_only=True)
     """
     Buyurtmalar ro'yxati uchun qisqartirilgan serializer
     """
@@ -245,11 +247,12 @@ class OrderListSerializer(serializers.ModelSerializer):
         decimal_places=7,
         read_only=True
     )
-    
+
     class Meta:
         model = Order
         fields = [
-            'id', 'client_full_name', 'client_phone_number', 'client_address',
+            'id', 'client_id', 'assigned_id',
+            'client_full_name', 'client_phone_number', 'client_address',
             'client_longitude', 'client_latitude', 'status', 'baklashka_soni', 'kuler_soni', 'pompa_soni', 'price',
             'created_at', 'updated_at', 'created_by_username', 'assigned_to_username'
         ]
