@@ -17,6 +17,7 @@ class OrderStatsSerializer(serializers.Serializer):
     cancelled_orders = serializers.IntegerField(read_only=True, help_text="Bekor qilingan buyurtmalar")
     total_baklashka = serializers.IntegerField(read_only=True, help_text="Jami baklashkalar soni")
     total_kuler = serializers.IntegerField(read_only=True, help_text="Jami kulerlar soni")
+    total_pompa = serializers.IntegerField(read_only=True, help_text="Jami pompa soni")
     total_price = serializers.DecimalField(read_only=True, help_text="Jami buyurtmalar narxi (so'mda)", max_digits=12, decimal_places=2)
     start_date = serializers.DateTimeField(read_only=True, help_text="Davr boshlanish sanasi")
     end_date = serializers.DateTimeField(read_only=True, help_text="Davr tugash sanasi")
@@ -31,6 +32,7 @@ class DailyStatsSerializer(serializers.Serializer):
     completed_orders = serializers.IntegerField(read_only=True, help_text="Kun davomida yakunlangan buyurtmalar")
     total_baklashka = serializers.IntegerField(read_only=True, help_text="Kun davomida jami baklashkalar")
     total_kuler = serializers.IntegerField(read_only=True, help_text="Kun davomida jami kulerlar")
+    total_pompa = serializers.IntegerField(read_only=True, help_text="Kun davomida jami pompa soni")
     total_price = serializers.DecimalField(read_only=True, help_text="Kun davomida jami buyurtmalar narxi (so'mda)", max_digits=12, decimal_places=2)
 
 

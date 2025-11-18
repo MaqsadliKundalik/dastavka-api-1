@@ -68,6 +68,7 @@ def calculate_order_stats(queryset, period_name, start_date, end_date):
     aggregates = queryset.aggregate(
         total_baklashka=Sum('baklashka_soni'),
         total_kuler=Sum('kuler_soni'),
+        total_pompa=Sum('pompa_soni'),
         total_price=Sum('price')
     )
     return {
@@ -79,6 +80,7 @@ def calculate_order_stats(queryset, period_name, start_date, end_date):
         'cancelled_orders': cancelled_orders,
         'total_baklashka': aggregates['total_baklashka'] or 0,
         'total_kuler': aggregates['total_kuler'] or 0,
+        'total_pompa': aggregates['total_pompa'] or 0,
         'total_price': aggregates['total_price'] or 0,
         'start_date': start_date,
         'end_date': end_date
@@ -115,6 +117,7 @@ def get_daily_breakdown(start_date, end_date):
         aggregates = day_orders.aggregate(
             total_baklashka=Sum('baklashka_soni'),
             total_kuler=Sum('kuler_soni'),
+            total_pompa=Sum('pompa_soni'),
             total_price=Sum('price')
         )
         daily_stats.append({
@@ -123,12 +126,13 @@ def get_daily_breakdown(start_date, end_date):
             'completed_orders': day_completed.count(),
             'total_baklashka': aggregates['total_baklashka'] or 0,
             'total_kuler': aggregates['total_kuler'] or 0,
+            'total_pompa': aggregates['total_pompa'] or 0,
             'total_price': aggregates['total_price'] or 0,
         })
         
         current_date += timedelta(days=1)
     
-    return daily_stats
+    return daily_stats if len(daily_stats) > 1 else daily_stats[0]
 
 
 @extend_schema(
