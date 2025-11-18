@@ -132,7 +132,7 @@ def get_daily_breakdown(start_date, end_date):
         
         current_date += timedelta(days=1)
     
-    return daily_stats if len(daily_stats) > 1 else daily_stats[0]
+    return daily_stats
 
 
 @extend_schema(
