@@ -253,7 +253,7 @@ class OrderListSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'client_id', 'assigned_id',
             'client_full_name', 'client_phone_number', 'client_address',
-            'client_longitude', 'client_latitude', 'status', 'baklashka_soni', 'kuler_soni', 'pompa_soni', 'price',
+            'client_longitude', 'client_latitude', 'status', 'baklashka_soni', 'kuler_soni', 'pompa_soni', 'price', 'notes',
             'created_at', 'updated_at', 'created_by_username', 'assigned_to_username'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
