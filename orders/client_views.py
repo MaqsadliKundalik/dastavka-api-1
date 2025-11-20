@@ -1,3 +1,61 @@
+from rest_framework.decorators import api_view
+from django.http import HttpResponse
+import openpyxl
+
+@api_view(['GET'])
+def clients_download(request):
+    """
+    Barcha mijozlarni chiroyli Excel faylga eksport qilish
+    """
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = 'Mijozlar'
+
+    # Sarlavhalar
+    headers = [
+        'ID', 'F.I.Sh.', 'Telefon', 'Manzil', 'Longitude', 'Latitude', 'Izoh', 'Yaratilgan', 'Yangilangan'
+    ]
+    ws.append(headers)
+
+    # Ma'lumotlar
+    from .models import Client
+    for client in Client.objects.all().order_by('-created_at'):
+        ws.append([
+            client.id,
+            client.full_name,
+            client.phone_number,
+            client.address,
+            client.longitude if client.longitude is not None else '',
+            client.latitude if client.latitude is not None else '',
+            client.notes or '',
+            client.created_at.strftime('%Y-%m-%d %H:%M'),
+            client.updated_at.strftime('%Y-%m-%d %H:%M'),
+        ])
+
+    # Chiroyli qilish: ustun kengliklari
+    for col in ws.columns:
+        max_length = 0
+        col_letter = col[0].column_letter
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        ws.column_dimensions[col_letter].width = max_length + 2
+
+    # Faylni xotirada saqlash va javobga joylash
+    from io import BytesIO
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    response = HttpResponse(
+        output,
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="clients.xlsx"'
+    return response
 from rest_framework import generics, status, permissions, filters
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response

@@ -3,7 +3,8 @@ from .client_views import (
     ClientListCreateView,
     ClientDetailView,
     client_orders,
-    clients_stats
+    clients_stats,
+    clients_download
 )
 
 urlpatterns = [
@@ -16,4 +17,7 @@ urlpatterns = [
     
     # Mijozlar statistikasi
     path('stats/', clients_stats, name='clients-stats'),
+
+    # Excel export
+    path('download/', clients_download, name='clients-download'),
 ]
