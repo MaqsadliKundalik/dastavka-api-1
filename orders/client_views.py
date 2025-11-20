@@ -1,8 +1,10 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from django.http import HttpResponse
 import openpyxl
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def clients_download(request):
     """
     Barcha mijozlarni chiroyli Excel faylga eksport qilish
