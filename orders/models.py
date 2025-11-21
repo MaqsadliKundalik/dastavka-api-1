@@ -147,6 +147,14 @@ class Order(models.Model):
         default=0,
         verbose_name="Baklashkalar soni"
     )
+    arenda_soni = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Arenda soni"
+    )
+    baklashkasiz_soni = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Baklashkasiz soni"
+    )
     kuler_soni = models.PositiveIntegerField(
         default=0,
         verbose_name="Kulerlar soni"

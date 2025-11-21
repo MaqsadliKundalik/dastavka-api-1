@@ -67,13 +67,15 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
-            'id', 'client', 'client_id', 'baklashka_soni', 'kuler_soni', 'pompa_soni',
+            'id', 'client', 'client_id', 'baklashka_soni', 'arenda_soni', 'baklashkasiz_soni', 'kuler_soni', 'pompa_soni',
             'price', 'notes', 'status', 'created_at', 'updated_at', 'created_by', 
             'assigned_to', 'created_by_username', 'assigned_to_username'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at', 'created_by_username', 'assigned_to_username']
         extra_kwargs = {
             'baklashka_soni': {'help_text': 'Baklashkalar soni'},
+            'arenda_soni': {'help_text': 'Arenda soni'},
+            'baklashkasiz_soni': {'help_text': 'Baklashkasiz soni'},
             'kuler_soni': {'help_text': 'Kulerlar soni'},
             'pompa_soni': {'help_text': 'Pompa soni'},
             'price': {'help_text': 'Buyurtma narxi (so\'mda)'},
@@ -115,10 +117,12 @@ class OrderCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
-            'client_id', 'baklashka_soni', 'kuler_soni', 'pompa_soni', 'price', 'notes', 'assigned_to'
+            'client_id', 'baklashka_soni', 'arenda_soni', 'baklashkasiz_soni', 'kuler_soni', 'pompa_soni', 'price', 'notes', 'assigned_to'
         ]
         extra_kwargs = {
             'baklashka_soni': {'help_text': 'Baklashkalar soni (default: 0)'},
+            'arenda_soni': {'help_text': 'Arenda soni (default: 0)'},
+            'baklashkasiz_soni': {'help_text': 'Baklashkasiz soni (default: 0)'},
             'kuler_soni': {'help_text': 'Kulerlar soni (default: 0)'},
             'pompa_soni': {'help_text': 'Pompa soni (default: 0)'},
             'price': {'help_text': 'Buyurtma narxi (so\'mda)'},
@@ -176,11 +180,13 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
-            'client_id', 'baklashka_soni', 'kuler_soni', 'pompa_soni', 'price',
+            'client_id', 'baklashka_soni', 'arenda_soni', 'baklashkasiz_soni', 'kuler_soni', 'pompa_soni', 'price',
             'notes', 'status', 'assigned_to'
         ]
         extra_kwargs = {
             'baklashka_soni': {'help_text': 'Baklashkalar soni'},
+            'arenda_soni': {'help_text': 'Arenda soni'},
+            'baklashkasiz_soni': {'help_text': 'Baklashkasiz soni'},
             'kuler_soni': {'help_text': 'Kulerlar soni'},
             'pompa_soni': {'help_text': 'Pompa soni'},
             'price': {'help_text': 'Buyurtma narxi (so\'mda)'},
@@ -253,7 +259,7 @@ class OrderListSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'client_id', 'assigned_id',
             'client_full_name', 'client_phone_number', 'client_address',
-            'client_longitude', 'client_latitude', 'status', 'baklashka_soni', 'kuler_soni', 'pompa_soni', 'price', 'notes',
+            'client_longitude', 'client_latitude', 'status', 'baklashka_soni', 'arenda_soni', 'baklashkasiz_soni', 'kuler_soni', 'pompa_soni', 'price', 'notes',
             'created_at', 'updated_at', 'created_by_username', 'assigned_to_username'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']

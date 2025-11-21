@@ -30,7 +30,7 @@ class ClientAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'get_client_name', 'get_client_phone', 'status', 'baklashka_soni', 'kuler_soni', 'created_by', 'assigned_to', 'created_at')
+    list_display = ('id', 'get_client_name', 'get_client_phone', 'status', 'baklashka_soni', 'arenda_soni', 'baklashkasiz_soni', 'kuler_soni', 'created_by', 'assigned_to', 'created_at')
     list_filter = ('status', 'created_at', 'updated_at', 'created_by', 'assigned_to')
     search_fields = ('id', 'client__full_name', 'client__phone_number', 'notes')
     readonly_fields = ('id', 'created_at', 'updated_at')
@@ -46,7 +46,7 @@ class OrderAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Buyurtma ma\'lumotlari', {
-            'fields': ('id', 'client', 'baklashka_soni', 'kuler_soni', 'notes')
+            'fields': ('id', 'client', 'baklashka_soni', 'arenda_soni', 'baklashkasiz_soni', 'kuler_soni', 'notes')
         }),
         ('Holat va foydalanuvchilar', {
             'fields': ('status', 'created_by', 'assigned_to')

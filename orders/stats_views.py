@@ -67,6 +67,8 @@ def calculate_order_stats(queryset, period_name, start_date, end_date):
     # Baklashka, kuler va narx yig'indilari
     aggregates = queryset.aggregate(
         total_baklashka=Sum('baklashka_soni'),
+        total_arenda=Sum('arenda_soni'),
+        total_baklashkasiz=Sum('baklashkasiz_soni'),
         total_kuler=Sum('kuler_soni'),
         total_pompa=Sum('pompa_soni'),
         total_price=Sum('price')
@@ -79,6 +81,8 @@ def calculate_order_stats(queryset, period_name, start_date, end_date):
         'completed_orders': completed_orders,
         'cancelled_orders': cancelled_orders,
         'total_baklashka': aggregates['total_baklashka'] or 0,
+        'total_arenda': aggregates['total_arenda'] or 0,
+        'total_baklashkasiz': aggregates['total_baklashkasiz'] or 0,
         'total_kuler': aggregates['total_kuler'] or 0,
         'total_pompa': aggregates['total_pompa'] or 0,
         'total_price': aggregates['total_price'] or 0,
@@ -116,6 +120,8 @@ def get_daily_breakdown(start_date, end_date):
         
         aggregates = day_orders.aggregate(
             total_baklashka=Sum('baklashka_soni'),
+            total_arenda=Sum('arenda_soni'),
+            total_baklashkasiz=Sum('baklashkasiz_soni'),
             total_kuler=Sum('kuler_soni'),
             total_pompa=Sum('pompa_soni'),
             total_price=Sum('price')
@@ -125,6 +131,8 @@ def get_daily_breakdown(start_date, end_date):
             'total_orders': day_orders.count(),
             'completed_orders': day_completed.count(),
             'total_baklashka': aggregates['total_baklashka'] or 0,
+            'total_arenda': aggregates['total_arenda'] or 0,
+            'total_baklashkasiz': aggregates['total_baklashkasiz'] or 0,
             'total_kuler': aggregates['total_kuler'] or 0,
             'total_pompa': aggregates['total_pompa'] or 0,
             'total_price': aggregates['total_price'] or 0,
