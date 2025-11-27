@@ -47,6 +47,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',  # API uchun disabled
@@ -122,10 +124,13 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = '/home/berekesu/bereke-suv.uz/django/static_files',)
+STATICFILES_DIRS = '/home/berekesu/bereke-suv.uz/django/static_files',
 STATIC_ROOT = '/home/berekesu/bereke-suv.uz/django/static'
 MEDIA_URL = 'media/'
 MEDIA_ROOT = '/home/berekesu/bereke-suv.uz/django/media'
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
