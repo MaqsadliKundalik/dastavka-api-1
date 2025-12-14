@@ -132,7 +132,7 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = [
             'id', 'client', 'client_id', 'baklashka_soni', 'arenda_soni', 'baklashkasiz_soni', 'kuler_soni', 'pompa_soni',
-            'price', 'notes', 'status', 'created_at', 'updated_at', 'created_by', 
+            'price', 'notes', 'status', 'is_debit', 'created_at', 'updated_at', 'created_by', 
             'assigned_to', 'created_by_username', 'assigned_to_username'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at', 'created_by_username', 'assigned_to_username']
@@ -145,6 +145,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'price': {'help_text': 'Buyurtma narxi (so\'mda)'},
             'notes': {'help_text': 'Buyurtma haqida qo\'shimcha izohlar (ixtiyoriy)'},
             'status': {'help_text': 'Buyurtma holati'},
+            'is_debit': {'help_text': 'Qarz (True/False)'},
             'assigned_to': {'help_text': 'Tayinlangan kuryer (ixtiyoriy)'},
         }
     
@@ -181,7 +182,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
-            'client_id', 'baklashka_soni', 'arenda_soni', 'baklashkasiz_soni', 'kuler_soni', 'pompa_soni', 'price', 'notes', 'assigned_to'
+            'client_id', 'baklashka_soni', 'arenda_soni', 'baklashkasiz_soni', 'kuler_soni', 'pompa_soni', 'price', 'notes', 'is_debit', 'assigned_to'
         ]
         extra_kwargs = {
             'baklashka_soni': {'help_text': 'Baklashkalar soni (default: 0)'},
@@ -191,6 +192,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             'pompa_soni': {'help_text': 'Pompa soni (default: 0)'},
             'price': {'help_text': 'Buyurtma narxi (so\'mda)'},
             'notes': {'help_text': 'Buyurtma haqida qo\'shimcha izohlar (ixtiyoriy)'},
+            'is_debit': {'help_text': 'Qarz (True/False, default: False)'},
             'assigned_to': {'help_text': 'Tayinlangan kuryer (ixtiyoriy)'},
         }
     
@@ -245,7 +247,7 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
         model = Order
         fields = [
             'client_id', 'baklashka_soni', 'arenda_soni', 'baklashkasiz_soni', 'kuler_soni', 'pompa_soni', 'price',
-            'notes', 'status', 'assigned_to'
+            'notes', 'status', 'is_debit', 'assigned_to'
         ]
         extra_kwargs = {
             'baklashka_soni': {'help_text': 'Baklashkalar soni'},
@@ -256,6 +258,7 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
             'price': {'help_text': 'Buyurtma narxi (so\'mda)'},
             'notes': {'help_text': 'Buyurtma haqida qo\'shimcha izohlar'},
             'status': {'help_text': 'Buyurtma holati'},
+            'is_debit': {'help_text': 'Qarz (True/False)'},
             'assigned_to': {'help_text': 'Tayinlangan kuryer'},
         }
     
@@ -323,7 +326,7 @@ class OrderListSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'client_id', 'assigned_id',
             'client_full_name', 'client_phone_number', 'client_address',
-            'client_longitude', 'client_latitude', 'status', 'baklashka_soni', 'arenda_soni', 'baklashkasiz_soni', 'kuler_soni', 'pompa_soni', 'price', 'notes',
+            'client_longitude', 'client_latitude', 'status', 'baklashka_soni', 'arenda_soni', 'baklashkasiz_soni', 'kuler_soni', 'pompa_soni', 'price', 'notes', 'is_debit',
             'created_at', 'updated_at', 'created_by_username', 'assigned_to_username'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
