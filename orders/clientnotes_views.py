@@ -37,15 +37,48 @@ def get_client_notes(request, client_id):
 
 
 @extend_schema(
-    summary="Mijoz uchun ClientNotes yaratish yoki yangilash",
-    description="Client ID orqali uning notes obyektini yaratish yoki yangilash",
+    summary="Mijoz uchun ClientNotes yaratish",
+    description="Client ID orqali uning notes obyektini yaratish",
+    parameters=[OpenApiParameter(name='client_id', type=int, location=OpenApiParameter.PATH, description='Client ID')],
+    request=ClientNotesSerializer,
+    responses={
+        201: ClientNotesSerializer,
+        400: OpenApiResponse(description="Noto'g'ri ma'lumotlar yoki notes allaqachon mavjud"),
+        404: OpenApiResponse(description="Client topilmadi")
+    },
+    tags=["ClientNotes"]
+)
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+def create_client_notes(request, client_id):
+    """
+    Client ID orqali uning notes obyektini yaratish
+    """
+    client = get_object_or_404(Client, id=client_id)
+    
+    # Tekshirish: bu client uchun allaqachon notes mavjudmi?
+    if ClientNotes.objects.filter(client=client).exists():
+        return Response(
+            {"error": f"ID={client_id} bo'lgan client uchun notes allaqachon mavjud!"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    serializer = ClientNotesSerializer(data={**request.data, 'client_id': client_id})
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(
+    summary="Mijoz uchun ClientNotes yangilash",
+    description="Client ID orqali uning notes obyektini yangilash",
     parameters=[OpenApiParameter(name='client_id', type=int, location=OpenApiParameter.PATH, description='Client ID')],
     request=ClientNotesSerializer,
     responses={
         200: ClientNotesSerializer,
-        201: ClientNotesSerializer,
         400: OpenApiResponse(description="Noto'g'ri ma'lumotlar"),
-        404: OpenApiResponse(description="Client topilmadi")
+        404: OpenApiResponse(description="Client yoki ClientNotes topilmadi")
     },
     tags=["ClientNotes"]
 )
@@ -65,12 +98,10 @@ def update_client_notes(request, client_id):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except ClientNotes.DoesNotExist:
-        # Agar notes mavjud bo'lmasa, yangi yaratamiz
-        serializer = ClientNotesSerializer(data={**request.data, 'client_id': client_id})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": f"ID={client_id} bo'lgan client uchun notes topilmadi!"},
+            status=status.HTTP_404_NOT_FOUND
+        )
 
 
 @extend_schema(
