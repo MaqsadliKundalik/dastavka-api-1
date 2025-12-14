@@ -1,10 +1,67 @@
 from rest_framework import serializers
-from .models import Order, Client
+from .models import Order, Client, ClientNotes
 from users.models import User
+
+
+class ClientNotesSerializer(serializers.ModelSerializer):
+    """
+    ClientNotes modelini serialize qilish uchun serializer
+    """
+    client_id = serializers.IntegerField(write_only=True, help_text="Mijoz ID raqami")
+    client_name = serializers.CharField(source='client.full_name', read_only=True, help_text="Mijoz ismi")
+    
+    class Meta:
+        model = ClientNotes
+        fields = [
+            'id', 'client_id', 'client_name', 'baklashka_soni', 'arenda_soni', 
+            'kuler_soni', 'pompa_soni'
+        ]
+        read_only_fields = ['id', 'client_name']
+        extra_kwargs = {
+            'baklashka_soni': {'help_text': 'Baklashkalar soni'},
+            'arenda_soni': {'help_text': 'Arenda soni'},
+            'kuler_soni': {'help_text': 'Kulerlar soni'},
+            'pompa_soni': {'help_text': 'Pompalar soni'},
+        }
+    
+    def validate_client_id(self, value):
+        """
+        Client ID validatsiyasi
+        """
+        try:
+            Client.objects.get(id=value)
+        except Client.DoesNotExist:
+            raise serializers.ValidationError(f"ID={value} bo'lgan mijoz topilmadi!")
+        return value
+    
+    def create(self, validated_data):
+        """
+        Yangi ClientNotes yaratish
+        """
+        client_id = validated_data.pop('client_id')
+        client = Client.objects.get(id=client_id)
+        validated_data['client'] = client
+        return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        """
+        ClientNotes yangilash
+        """
+        if 'client_id' in validated_data:
+            client_id = validated_data.pop('client_id')
+            client = Client.objects.get(id=client_id)
+            instance.client = client
+        
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        
+        instance.save()
+        return instance
 
 
 class ClientSerializer(serializers.ModelSerializer):
     is_danger = serializers.SerializerMethodField(help_text="1 oydan beri zakaz bermagan mijozlar uchun True, aks holda False")
+    has_debit = serializers.SerializerMethodField(help_text="Mijozning qarzi bor bo'lsa True, yo'q bo'lsa False")
 
     def get_is_danger(self, obj):
         from datetime import timedelta
@@ -19,6 +76,13 @@ class ClientSerializer(serializers.ModelSerializer):
         if (now - last_order.created_at).days >= 30:
             return True
         return False
+    
+    def get_has_debit(self, obj):
+        """
+        Mijozning buyurtmalari orasida qarz (is_debit=True) bor yoki yo'qligini tekshirish
+        """
+        return Order.objects.filter(client=obj, is_debit=True).exists()
+    
     """
     Client modelini serialize qilish uchun serializer
     """
@@ -26,9 +90,9 @@ class ClientSerializer(serializers.ModelSerializer):
         model = Client
         fields = [
             'id', 'full_name', 'phone_number', 'address', 
-            'longitude', 'latitude', 'notes', 'created_at', 'updated_at', 'is_danger'
+            'longitude', 'latitude', 'notes', 'created_at', 'updated_at', 'is_danger', 'has_debit'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at', 'is_danger']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'is_danger', 'has_debit']
         extra_kwargs = {
             'full_name': {'help_text': 'Mijozning to\'liq ism-familyasi'},
             'phone_number': {'help_text': 'Mijozning telefon raqami'},

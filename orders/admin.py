@@ -1,5 +1,26 @@
 from django.contrib import admin
-from .models import Order, Client
+from .models import Order, Client, ClientNotes
+
+
+@admin.register(ClientNotes)
+class ClientNotesAdmin(admin.ModelAdmin):
+    list_display = ('id', 'get_client_name', 'baklashka_soni', 'arenda_soni', 'kuler_soni', 'pompa_soni')
+    list_filter = ('client',)
+    search_fields = ('client__full_name', 'client__phone_number')
+    readonly_fields = ('id',)
+    
+    def get_client_name(self, obj):
+        return obj.client.full_name if obj.client else '-'
+    get_client_name.short_description = 'Mijoz'
+    
+    fieldsets = (
+        ('Mijoz', {
+            'fields': ('id', 'client')
+        }),
+        ('Mahsulotlar soni', {
+            'fields': ('baklashka_soni', 'arenda_soni', 'kuler_soni', 'pompa_soni')
+        }),
+    )
 
 
 @admin.register(Client)

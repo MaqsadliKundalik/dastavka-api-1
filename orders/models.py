@@ -68,6 +68,27 @@ class Client(models.Model):
         """Mijozning buyurtmalari soni"""
         return self.orders.count()
 
+class ClientNotes(models.Model):
+    client = models.ForeignKey(
+        Client,
+        on_delete=models.CASCADE,
+    )
+    baklashka_soni = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Baklashkalar soni"
+    )   
+    arenda_soni = models.PositiveIntegerField(
+        default=0,  
+        verbose_name="Arenda soni"
+    )
+    kuler_soni = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Kulerlar soni"
+    )
+    pompa_soni = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Pompalar soni"
+    )
 
 class Order(models.Model):
     """
@@ -196,7 +217,10 @@ class Order(models.Model):
         verbose_name="Buyurtma narxi (so'm)",
         default=0
     )
-    
+    is_debit = models.BooleanField(
+        verbose_name="Qarz",
+        default=False
+    )
     # Qaysi user yaratgan (ixtiyoriy)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
