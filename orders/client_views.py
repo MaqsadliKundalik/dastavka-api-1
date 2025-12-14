@@ -15,13 +15,16 @@ def clients_download(request):
 
     # Sarlavhalar
     headers = [
-        'ID', 'F.I.Sh.', 'Telefon', 'Manzil', 'Longitude', 'Latitude', 'Izoh', 'Yaratilgan', 'Yangilangan'
+        'ID', 'F.I.Sh.', 'Telefon', 'Manzil', 'Longitude', 'Latitude', 'Izoh', 'Qarzmi', 'Yaratilgan', 'Yangilangan'
     ]
     ws.append(headers)
 
     # Ma'lumotlar
-    from .models import Client
+    from .models import Client, Order
     for client in Client.objects.all().order_by('-created_at'):
+        # Qarz borligini tekshirish
+        has_debit = Order.objects.filter(client=client, is_debit=True).exists()
+        
         ws.append([
             client.id,
             client.full_name,
@@ -30,6 +33,7 @@ def clients_download(request):
             client.longitude if client.longitude is not None else '',
             client.latitude if client.latitude is not None else '',
             client.notes or '',
+            'Ha' if has_debit else 'Yo\'q',
             client.created_at.strftime('%Y-%m-%d %H:%M'),
             client.updated_at.strftime('%Y-%m-%d %H:%M'),
         ])

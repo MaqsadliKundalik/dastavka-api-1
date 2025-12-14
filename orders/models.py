@@ -69,9 +69,11 @@ class Client(models.Model):
         return self.orders.count()
 
 class ClientNotes(models.Model):
-    client = models.ForeignKey(
+    client = models.OneToOneField(
         Client,
         on_delete=models.CASCADE,
+        unique=True,
+        related_name='client_notes'
     )
     baklashka_soni = models.PositiveIntegerField(
         default=0,
@@ -89,6 +91,13 @@ class ClientNotes(models.Model):
         default=0,
         verbose_name="Pompalar soni"
     )
+
+    class Meta:
+        verbose_name = "Client Notes"
+        verbose_name_plural = "Client Notes"
+
+    def __str__(self):
+        return f"Notes for {self.client.full_name}"
 
 class Order(models.Model):
     """

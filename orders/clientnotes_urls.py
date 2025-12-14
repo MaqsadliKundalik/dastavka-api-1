@@ -1,15 +1,13 @@
 from django.urls import path
 from .clientnotes_views import (
-    ClientNotesListCreateView,
-    ClientNotesDetailView,
-    client_notes_by_client
+    get_client_notes,
+    update_client_notes,
+    delete_client_notes
 )
 
 urlpatterns = [
-    # ClientNotes CRUD
-    path('', ClientNotesListCreateView.as_view(), name='clientnotes-list-create'),
-    path('<int:pk>/', ClientNotesDetailView.as_view(), name='clientnotes-detail'),
-    
-    # Mijoz uchun ClientNotes
-    path('client/<int:client_id>/', client_notes_by_client, name='clientnotes-by-client'),
+    # ClientNotes CRUD by client_id
+    path('<int:client_id>/', get_client_notes, name='clientnotes-get'),
+    path('<int:client_id>/update/', update_client_notes, name='clientnotes-update'),
+    path('<int:client_id>/delete/', delete_client_notes, name='clientnotes-delete'),
 ]
