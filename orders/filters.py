@@ -16,11 +16,24 @@ class OrderFilter(django_filters.FilterSet):
     # Client telefon raqami bo'yicha qidirish
     client_phone = django_filters.CharFilter(field_name='client__phone_number', lookup_expr='icontains')
     
+    # Arenda mavjud bo'lgan buyurtmalarni filterlash
+    has_arenda = django_filters.BooleanFilter(method='filter_has_arenda')
+    
     class Meta:
         model = Order
         fields = ['status', 'assigned_to', 'created_by']
     
-    # endi custom filter kerak emas, NumberFilter exact moslik uchun yetarli
+    def filter_has_arenda(self, queryset, name, value):
+        """
+        Arenda mavjud bo'lgan buyurtmalarni filterlash
+        has_arenda=true -> arenda_soni > 0 bo'lgan orderlar
+        has_arenda=false -> arenda_soni = 0 bo'lgan orderlar
+        """
+        if value is True:
+            return queryset.filter(arenda_soni__gt=0)
+        elif value is False:
+            return queryset.filter(arenda_soni=0)
+        return queryset
 
 
 class ClientFilter(django_filters.FilterSet):
