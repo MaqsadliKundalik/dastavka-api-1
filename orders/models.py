@@ -4,11 +4,6 @@ import random
 
 
 class Client(models.Model):
-    """
-    Mijoz (Buyurtmachi) modeli - mijozlar ma'lumotlari uchun
-    """
-    
-    # Mijoz ma'lumotlari
     full_name = models.CharField(
         max_length=255, 
         verbose_name="Ism-familya"
@@ -21,8 +16,6 @@ class Client(models.Model):
     address = models.TextField(
         verbose_name="To'liq manzil"
     )
-    
-    # Geografik koordinatalar
     longitude = models.DecimalField(
         max_digits=10,
         decimal_places=7,
@@ -37,15 +30,11 @@ class Client(models.Model):
         null=True,
         verbose_name="Latitude"
     )
-    
-    # Qo'shimcha ma'lumotlar
     notes = models.TextField(
         blank=True,
         null=True,
         verbose_name="Mijoz haqida izoh"
     )
-    
-    # Vaqt belgilari
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name="Yaratilgan sana"
@@ -65,7 +54,6 @@ class Client(models.Model):
         
     @property
     def orders_count(self):
-        """Mijozning buyurtmalari soni"""
         return self.orders.count()
 
 class ClientNotes(models.Model):
@@ -100,10 +88,6 @@ class ClientNotes(models.Model):
         return f"Notes for {self.client.full_name}"
 
 class Order(models.Model):
-    """
-    Buyurtma modeli
-    """
-    
     STATUS_CHOICES = [
         ('kútilmekte', 'kútilmekte'),
         ('orınlandı', 'orınlandı'),
@@ -112,67 +96,45 @@ class Order(models.Model):
     
     @staticmethod
     def generate_unique_order_id():
-        """
-        Unique ID generatsiya qilish:
-        - 5 xonali ID-lar (10000-99999) bilan boshlanadi
-        - Agar 5 xonali ID-lar tugasa, 6 xonali ID-larga (100000-999999) o'tadi
-        - Va hokazo...
-        """
-        
-        # ID intervallarini aniqlash
         ranges = [
             (10000, 99999),      # 5 xonali
             (100000, 999999),    # 6 xonali  
             (1000000, 9999999),  # 7 xonali
             (10000000, 99999999) # 8 xonali
         ]
-        
-        max_attempts = 50  # Har bir range uchun maksimal urinishlar
+        max_attempts = 50
         
         for min_id, max_id in ranges:
-            # Har bir range-da random ID qidirish
             for attempt in range(max_attempts):
                 order_id = random.randint(min_id, max_id)
-                
-                # Agar bu ID mavjud bo'lmasa, qaytarish
                 if not Order.objects.filter(id=order_id).exists():
                     return order_id
             
-            # Agar random ID topilmasa, sequential ravishda qidirish
             existing_ids_in_range = set(
                 Order.objects.filter(
                     id__gte=min_id, 
                     id__lte=max_id
                 ).values_list('id', flat=True)
             )
-            
-            # Range ichida bo'sh ID qidirish
             for potential_id in range(min_id, max_id + 1):
                 if potential_id not in existing_ids_in_range:
                     return potential_id
         
-        # Agar barcha range-lar to'lsa, eng katta ID + 1 qaytarish
         last_order = Order.objects.order_by('-id').first()
         if last_order:
             return last_order.id + 1
-        
-        return 10000  # Default birinchi ID
+        return 10000
     
-    # 5-xonali unique ID
     id = models.PositiveIntegerField(
         primary_key=True, 
         verbose_name="Buyurtma ID"
     )
-    
-    # Mijoz (Foreign Key)
     client = models.ForeignKey(
         Client,
         on_delete=models.CASCADE,
         related_name='orders',
         verbose_name="Mijoz"
     )
-    
-    # Zakazlar soni
     baklashka_soni = models.PositiveIntegerField(
         default=0,
         verbose_name="Baklashkalar soni"
@@ -193,23 +155,17 @@ class Order(models.Model):
         default=0,
         verbose_name="Pompalar soni"
     )
-    
-    # Buyurtma haqida qo'shimcha ma'lumotlar
     notes = models.TextField(
         blank=True,
         null=True,
         verbose_name="Buyurtma haqida izoh"
     )
-    
-    # Status va vaqt
     status = models.CharField(
         max_length=15,
         choices=STATUS_CHOICES,
         default='kútilmekte',
         verbose_name="Status"
     )
-    
-    # Vaqt belgilari
     created_at = models.DateField(
         auto_now_add=True,
         verbose_name="Yaratilgan sana (sana)"
@@ -218,8 +174,6 @@ class Order(models.Model):
         auto_now=True,
         verbose_name="Yangilangan sana"
     )
-
-    # Buyurtma narxi
     price = models.DecimalField(
         max_digits=12,
         decimal_places=2,
@@ -230,7 +184,6 @@ class Order(models.Model):
         verbose_name="Qarz",
         default=False
     )
-    # Qaysi user yaratgan (ixtiyoriy)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -239,8 +192,6 @@ class Order(models.Model):
         related_name='created_orders',
         verbose_name="Yaratuvchi"
     )
-    
-    # Qaysi kuryer bajargan (ixtiyoriy)
     assigned_to = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -257,7 +208,6 @@ class Order(models.Model):
         ordering = ['-created_at']
         
     def save(self, *args, **kwargs):
-        # Agar ID allaqachon mavjud bo'lsa, yangi ID generatsiya qilish
         if not self.pk:
             self.id = self.generate_unique_order_id()
         super().save(*args, **kwargs)

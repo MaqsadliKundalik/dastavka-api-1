@@ -3,9 +3,6 @@ from django.db import models
 
 
 class User(AbstractUser):
-    """
-    Custom User modeli dastavka ilovasi uchun
-    """
     ROLE_CHOICES = [
         ('admin', 'Admin'),
         ('kuryer', 'Kuryer'),
@@ -16,11 +13,8 @@ class User(AbstractUser):
         ('inactive', 'Inactive'),
     ]
     
-    # AbstractUser da username allaqachon mavjud (login uchun ishlatamiz)
-    # Email fieldini o'chiramiz
     email = None
     
-    # Email field ni required qilmaslik
     EMAIL_FIELD = None
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []

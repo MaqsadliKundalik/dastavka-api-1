@@ -24,25 +24,21 @@ def get_period_dates(period):
         end_date = datetime.combine(today, datetime.max.time())
         period_name = "Bugun"
     elif period == 'week':
-        # Haftaning dushanba kunidan boshlaymiz
         days_since_monday = today.weekday()
         monday = today - timedelta(days=days_since_monday)
         start_date = datetime.combine(monday, datetime.min.time())
         end_date = now
         period_name = "Shu hafta"
     elif period == 'month':
-        # Oyning birinchi kunidan boshlaymiz  
         first_day = today.replace(day=1)
         start_date = datetime.combine(first_day, datetime.min.time())
         end_date = now
         period_name = "Shu oy"
     else:
-        # Default: bugun
         start_date = datetime.combine(today, datetime.min.time())
         end_date = datetime.combine(today, datetime.max.time())
         period_name = "Bugun"
     
-    # Timezone-aware qilamiz
     if timezone.is_naive(start_date):
         start_date = timezone.make_aware(start_date)
     if timezone.is_naive(end_date):
@@ -55,16 +51,13 @@ def calculate_order_stats(queryset, period_name, start_date, end_date):
     """
     Buyurtmalar statistikasini hisoblash
     """
-    # Asosiy statistika
     total_orders = queryset.count()
     
-    # Status bo'yicha taqsimot
     pending_orders = queryset.filter(status='pending').count()
     in_progress_orders = queryset.filter(status='in_progress').count()
     completed_orders = queryset.filter(status='completed').count()
     cancelled_orders = queryset.filter(status='cancelled').count()
     
-    # Baklashka, kuler va narx yig'indilari
     aggregates = queryset.aggregate(
         total_baklashka=Sum('baklashka_soni'),
         total_arenda=Sum('arenda_soni'),
@@ -100,7 +93,6 @@ def get_daily_breakdown(start_date, end_date):
     end_date_only = end_date.date()
     
     while current_date <= end_date_only:
-        # Kun davomidagi buyurtmalar
         day_start = datetime.combine(current_date, datetime.min.time())
         day_end = datetime.combine(current_date, datetime.max.time())
         
@@ -207,20 +199,16 @@ def order_statistics(request):
     """
     period = request.query_params.get('period', 'today')
     
-    # Davr sanalarini olish
     start_date, end_date, period_name = get_period_dates(period)
     
-    # Davr ichidagi buyurtmalarni olish
     orders_queryset = Order.objects.filter(
         created_at__range=[start_date, end_date]
     )
     
-    # Asosiy statistika
     summary_stats = calculate_order_stats(
         orders_queryset, period_name, start_date, end_date
     )
     
-    # Kunlik taqsimot
     daily_breakdown = get_daily_breakdown(start_date, end_date)
     
     response_data = {
@@ -266,7 +254,6 @@ def general_statistics(request):
     """
     Umumiy statistika endpoint-i
     """
-    # Barcha buyurtmalar
     all_orders = Order.objects.all()
     
     if all_orders.exists():
@@ -277,7 +264,6 @@ def general_statistics(request):
     
     end_date = timezone.now()
     
-    # Statistika hisoblash
     stats = calculate_order_stats(
         all_orders, "Barcha vaqt", start_date, end_date
     )

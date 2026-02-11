@@ -43,9 +43,6 @@ from .filters import OrderFilter
     )
 )
 class OrderListCreateView(generics.ListCreateAPIView):
-    """
-    Buyurtmalar ro'yxati va yangi buyurtma yaratish
-    """
     queryset = Order.objects.all()
     permission_classes = [permissions.AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
@@ -60,12 +57,9 @@ class OrderListCreateView(generics.ListCreateAPIView):
         return OrderListSerializer
     
     def create(self, request, *args, **kwargs):
-        """Custom create method to return full order data with ID"""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         order = serializer.save()
-        
-        # Full order serializer bilan qaytarish
         response_serializer = OrderSerializer(order, context=self.get_serializer_context())
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
@@ -109,9 +103,6 @@ class OrderListCreateView(generics.ListCreateAPIView):
     )
 )
 class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Bitta buyurtma bilan bog'liq CRUD operatsiyalar
-    """
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [permissions.AllowAny]
@@ -158,9 +149,6 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
 @api_view(['PATCH'])
 @permission_classes([permissions.AllowAny])
 def update_order_status(request, pk):
-    """
-    Buyurtma statusini yangilash
-    """
     try:
         order = Order.objects.get(pk=pk)
     except Order.DoesNotExist:
@@ -228,9 +216,6 @@ def update_order_status(request, pk):
 @api_view(['PATCH'])
 @permission_classes([permissions.AllowAny])
 def assign_courier(request, pk):
-    """
-    Buyurtmani kuryerga tayinlash
-    """
     try:
         order = Order.objects.get(pk=pk)
     except Order.DoesNotExist:
@@ -242,7 +227,6 @@ def assign_courier(request, pk):
     courier_id = request.data.get('courier_id')
     
     if courier_id is None:
-        # Tayinlashni bekor qilish
         order.assigned_to = None
         order.save()
         return Response({
@@ -283,16 +267,11 @@ def assign_courier(request, pk):
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])
 def my_orders(request):
-    """
-    Joriy foydalanuvchining buyurtmalari
-    """
     user = request.user
     
     if user.role == 'kuryer':
-        # Kuryer uchun - tayinlangan buyurtmalar
         orders = Order.objects.filter(assigned_to=user)
     else:
-        # Admin yoki boshqa rollar uchun - yaratgan buyurtmalar
         orders = Order.objects.filter(created_by=user)
     
     serializer = OrderListSerializer(orders, many=True, context={'request': request})

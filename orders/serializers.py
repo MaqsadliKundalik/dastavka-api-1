@@ -4,9 +4,6 @@ from users.models import User
 
 
 class ClientNotesSerializer(serializers.ModelSerializer):
-    """
-    ClientNotes modelini serialize qilish uchun serializer
-    """
     client_id = serializers.IntegerField(write_only=True, help_text="Mijoz ID raqami")
     client_name = serializers.CharField(source='client.full_name', read_only=True, help_text="Mijoz ismi")
     
@@ -35,18 +32,12 @@ class ClientNotesSerializer(serializers.ModelSerializer):
         return value
     
     def create(self, validated_data):
-        """
-        Yangi ClientNotes yaratish
-        """
         client_id = validated_data.pop('client_id')
         client = Client.objects.get(id=client_id)
         validated_data['client'] = client
         return super().create(validated_data)
     
     def update(self, instance, validated_data):
-        """
-        ClientNotes yangilash
-        """
         if 'client_id' in validated_data:
             client_id = validated_data.pop('client_id')
             client = Client.objects.get(id=client_id)
@@ -78,9 +69,6 @@ class ClientSerializer(serializers.ModelSerializer):
         return False
     
     def get_has_debit(self, obj):
-        """
-        Mijozning buyurtmalari orasida qarz (is_debit=True) bor yoki yo'qligini tekshirish
-        """
         return Order.objects.filter(client=obj, is_debit=True).exists()
     
     """
@@ -103,18 +91,12 @@ class ClientSerializer(serializers.ModelSerializer):
         }
     
     def validate_phone_number(self, value):
-        """
-        Telefon raqam validatsiyasi
-        """
         if not value.replace('+', '').replace('-', '').replace(' ', '').replace('(', '').replace(')', '').isdigit():
             raise serializers.ValidationError("Telefon raqam faqat raqamlardan iborat bo'lishi kerak!")
         return value
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    """
-    Order modelini serialize qilish uchun asosiy serializer
-    """
     created_by_username = serializers.CharField(
         source='created_by.username', 
         read_only=True,
@@ -169,11 +151,6 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class OrderCreateSerializer(serializers.ModelSerializer):
-    """
-    Yangi buyurtma yaratish uchun serializer.
-    Faqat mavjud mijoz ID si bilan buyurtma yaratish.
-    """
-    # Mavjud client ID si (majburiy)
     client_id = serializers.IntegerField(
         required=True, 
         help_text="Mavjud mijozning ID raqami"
@@ -217,16 +194,11 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         return value
     
     def create(self, validated_data):
-        """
-        Yangi buyurtma yaratish (faqat mavjud mijoz bilan)
-        """
         client_id = validated_data.pop('client_id')
         client = Client.objects.get(id=client_id)
         
         # Buyurtma ma'lumotlarini tayyorlash
         validated_data['client'] = client
-        
-        # Yaratuvchini request.user dan olish
         request = self.context.get('request')
         if request and hasattr(request, 'user') and request.user.is_authenticated:
             validated_data['created_by'] = request.user
@@ -235,9 +207,6 @@ class OrderCreateSerializer(serializers.ModelSerializer):
 
 
 class OrderUpdateSerializer(serializers.ModelSerializer):
-    """
-    Buyurtmani yangilash uchun serializer
-    """
     client_id = serializers.IntegerField(
         required=False, 
         help_text="Mijozni o'zgartirish uchun mijoz ID raqami (ixtiyoriy)"
@@ -263,9 +232,6 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
         }
     
     def validate_client_id(self, value):
-        """
-        Client ID validatsiyasi
-        """
         if value:
             try:
                 Client.objects.get(id=value)
@@ -285,9 +251,6 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
 class OrderListSerializer(serializers.ModelSerializer):
     client_id = serializers.IntegerField(source='client.id', read_only=True)
     assigned_id = serializers.IntegerField(source='assigned_to.id', read_only=True)
-    """
-    Buyurtmalar ro'yxati uchun qisqartirilgan serializer
-    """
     created_by_username = serializers.CharField(
         source='created_by.username', 
         read_only=True

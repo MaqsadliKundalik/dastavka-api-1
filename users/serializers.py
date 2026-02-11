@@ -28,10 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
         Yangi user yaratish
         """
         password = validated_data.pop('password')
-        # Email field ni olib tashlash (agar mavjud bo'lsa)
         validated_data.pop('email', None)
-        
-        # User yaratish va parolni hash qilish
         user = User(**validated_data)
         user.set_password(password)
         user.save()
@@ -80,7 +77,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         if data['password'] != data['password_confirm']:
             raise serializers.ValidationError("Parollar mos kelmaydi!")
         
-        # Username unique ekanligini tekshirish
         if User.objects.filter(username=data['username']).exists():
             raise serializers.ValidationError("Bu username allaqachon mavjud!")
         
@@ -92,11 +88,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         """
         validated_data.pop('password_confirm')
         password = validated_data.pop('password')
-        
-        # Email field ni olib tashlash (agar mavjud bo'lsa)
         validated_data.pop('email', None)
-        
-        # User yaratish va parolni hash qilish
         user = User(**validated_data)
         user.set_password(password)
         user.save()

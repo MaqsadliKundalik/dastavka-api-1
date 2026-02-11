@@ -6,7 +6,6 @@ class Client(models.Model):
     Mijoz (Buyurtmachi) modeli - mijozlar ma'lumotlari uchun
     """
     
-    # Mijoz ma'lumotlari
     full_name = models.CharField(
         max_length=255, 
         verbose_name="Ism-familya"
@@ -16,7 +15,6 @@ class Client(models.Model):
         verbose_name="Telefon raqam"
     )
     
-    # Lokatsiya ma'lumotlari
     location_name = models.CharField(
         max_length=255,
         verbose_name="Manzil nomi/Tavsifi"
@@ -25,7 +23,6 @@ class Client(models.Model):
         verbose_name="To'liq manzil"
     )
     
-    # Geografik koordinatalar
     longitude = models.DecimalField(
         max_digits=10,
         decimal_places=7,
@@ -41,14 +38,12 @@ class Client(models.Model):
         verbose_name="Latitude"
     )
     
-    # Qo'shimcha ma'lumotlar
     notes = models.TextField(
         blank=True,
         null=True,
         verbose_name="Mijoz haqida izoh"
     )
     
-    # Vaqt belgilari
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name="Yaratilgan sana"

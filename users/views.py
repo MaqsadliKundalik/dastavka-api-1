@@ -52,7 +52,7 @@ class UserListCreateView(generics.ListCreateAPIView):
             queryset = queryset.filter(role=role)
         return queryset
 
-    pagination_class = None  # Remove pagination for this endpoint
+    pagination_class = None  
 
 
 @extend_schema_view(
@@ -81,6 +81,7 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     Bitta foydalanuvchi bilan bog'liq CRUD operatsiyalar
     """
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
