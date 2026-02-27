@@ -53,10 +53,12 @@ def calculate_order_stats(queryset, period_name, start_date, end_date):
     """
     total_orders = queryset.count()
     
-    pending_orders = queryset.filter(status='pending').count()
-    in_progress_orders = queryset.filter(status='in_progress').count()
-    completed_orders = queryset.filter(status='completed').count()
-    cancelled_orders = queryset.filter(status='cancelled').count()
+    pending_orders = queryset.filter(status='kutilmoqda').count()
+    kuryerga_berildi_orders = queryset.filter(status='kuryerga_berildi').count()
+    yolda_orders = queryset.filter(status='yolda').count()
+    yetkazildi_orders = queryset.filter(status='yetkazildi').count()
+    completed_orders = queryset.filter(status='bajarildi').count()
+    cancelled_orders = queryset.filter(status='bekor_qilindi').count()
     
     aggregates = queryset.aggregate(
         total_baklashka=Sum('baklashka_soni'),
@@ -70,7 +72,9 @@ def calculate_order_stats(queryset, period_name, start_date, end_date):
         'period': period_name,
         'total_orders': total_orders,
         'pending_orders': pending_orders,
-        'in_progress_orders': in_progress_orders,
+        'kuryerga_berildi_orders': kuryerga_berildi_orders,
+        'yolda_orders': yolda_orders,
+        'yetkazildi_orders': yetkazildi_orders,
         'completed_orders': completed_orders,
         'cancelled_orders': cancelled_orders,
         'total_baklashka': aggregates['total_baklashka'] or 0,
@@ -107,7 +111,7 @@ def get_daily_breakdown(start_date, end_date):
         
         day_completed = Order.objects.filter(
             updated_at__range=[day_start, day_end],
-            status='completed'
+            status='bajarildi'
         )
         
         aggregates = day_orders.aggregate(
@@ -441,8 +445,9 @@ def couriers_statistics(request):
         total_assigned = assigned_orders.count()
         
         if total_assigned > 0:
-            completed_orders = assigned_orders.filter(status='completed').count()
-            in_progress_orders = assigned_orders.filter(status='in_progress').count()
+            completed_orders = assigned_orders.filter(status='bajarildi').count()
+            yetkazildi_orders = assigned_orders.filter(status='yetkazildi').count()
+            in_progress_orders = assigned_orders.filter(status__in=['kuryerga_berildi', 'yolda']).count()
             completion_rate = (completed_orders / total_assigned) * 100
         else:
             completed_orders = 0

@@ -89,8 +89,11 @@ class ClientNotes(models.Model):
 
 class Order(models.Model):
     STATUS_CHOICES = [
-        ('kútilmekte', 'kútilmekte'),
-        ('orınlandı', 'orınlandı'),
+        ('kutilmoqda', 'Kutilmoqda'),
+        ('kuryerga_berildi', 'Kuryerga berildi'),
+        ('yolda', 'Yo\'lda'),
+        ('yetkazildi', 'Yetkazildi'),
+        ('bajarildi', 'Bajarildi'),
         ('bekor_qilindi', 'Bekor qilindi'),
     ]
     
@@ -161,9 +164,9 @@ class Order(models.Model):
         verbose_name="Buyurtma haqida izoh"
     )
     status = models.CharField(
-        max_length=15,
+        max_length=20,
         choices=STATUS_CHOICES,
-        default='kútilmekte',
+        default='kutilmoqda',
         verbose_name="Status"
     )
     created_at = models.DateField(

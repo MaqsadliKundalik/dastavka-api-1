@@ -121,7 +121,7 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
         'properties': {
             'status': {
                 'type': 'string',
-                'enum': ['kutilmoqda', 'bajarildi', 'bekor_qilindi'],
+                'enum': ['kutilmoqda', 'kuryerga_berildi', 'yolda', 'yetkazildi', 'bajarildi', 'bekor_qilindi'],
                 'description': 'Yangi status'
             }
         },
@@ -164,7 +164,7 @@ def update_order_status(request, pk):
             status=status.HTTP_400_BAD_REQUEST
         )
     
-    valid_statuses = ['kutilmoqda', 'bajarildi', 'bekor_qilindi']
+    valid_statuses = ['kutilmoqda', 'kuryerga_berildi', 'yolda', 'yetkazildi', 'bajarildi', 'bekor_qilindi']
     if new_status not in valid_statuses:
         return Response(
             {"error": f"Status {valid_statuses} ichidan birini tanlang!"}, 
