@@ -138,10 +138,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = User
-        fields = ['id', 'username', 'full_name', 'role', 'status', 'created_at', 'updated_at']
+        fields = ['id', 'username', 'full_name', 'role', 'status', 'phone_number', 'created_at', 'updated_at']
         read_only_fields = ['id', 'username', 'created_at', 'updated_at']
         extra_kwargs = {
             'full_name': {'help_text': 'To\'liq ism-familya'},
             'role': {'help_text': 'Foydalanuvchi roli (admin/kuryer)'},
             'status': {'help_text': 'Hisobning holati (active/inactive)'},
+            'phone_number': {'help_text': 'Telefon raqam'},
         }

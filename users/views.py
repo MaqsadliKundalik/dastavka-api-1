@@ -105,7 +105,8 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
                             "username": "test_user",
                             "full_name": "Test User",
                             "role": "kuryer",
-                            "status": "active"
+                            "status": "active",
+                            "phone_number": "1234567890"
                         },
                         "token": "abc123token"
                     }
@@ -156,7 +157,8 @@ def user_registration(request):
                             "username": "test_user",
                             "full_name": "Test User",
                             "role": "kuryer",
-                            "status": "active"
+                            "status": "active",
+                            "phone_number": "1234567890"
                         },
                         "token": "abc123token"
                     }
@@ -278,7 +280,8 @@ def user_profile(request):
                             "username": "test_user",
                             "full_name": "Yangilangan Ism",
                             "role": "kuryer",
-                            "status": "active"
+                            "status": "active",
+                            "phone_number": "1234567890"
                         }
                     }
                 )
