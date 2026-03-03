@@ -26,7 +26,7 @@ class User(AbstractUser):
         default='kuryer',
         verbose_name="Rol"
     )
-    phone_number = models.CharField(max_length=20, verbose_name="Telefon raqam")
+    phone_number = models.CharField(max_length=20, verbose_name="Telefon raqam", null=True, blank=True)
     status = models.CharField(
         max_length=10, 
         choices=STATUS_CHOICES, 
